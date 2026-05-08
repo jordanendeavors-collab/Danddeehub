@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#1A2744"><meta name="apple-mobile-web-app-capable" content="yes">
+<title>danddee | A3 Smart Security Hub</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f8fafc;--cd:#fff;--c2:#f1f5f9;--bdr:#e2e8f0;--nv:#1A2744;--rd:#CC2229;--gd:#D4A843;--tl:#0D9488;--gn:#16A34A;--bl:#2563EB;--dk:#1e293b;--md:#64748B;--lt:#94a3b8;--r:14px;--sh:0 4px 20px rgba(0,0,0,.08)}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dk);min-height:100vh;overflow:hidden}
+#gate{position:fixed;inset:0;background:linear-gradient(135deg,#0F1A2E,#1A2744,#243656);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;z-index:999}
+#gate.h{display:none}
+.g-logo{font-family:'Playfair Display',serif;font-size:2.5rem;color:var(--gd);font-weight:900;letter-spacing:2px}
+.g-sub{color:var(--tl);font-size:.6rem;letter-spacing:5px;text-transform:uppercase}
+.g-line{width:60px;height:2px;background:var(--gd);margin:.3rem 0}
+.g-in{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:.6rem 1rem;color:white;font-size:.9rem;width:220px;text-align:center;outline:none}.g-in:focus{border-color:var(--gd)}
+.g-btn{background:var(--gd);color:var(--nv);border:none;padding:.6rem 2.5rem;border-radius:10px;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'DM Sans',sans-serif}
+.g-err{color:#f87171;font-size:.65rem;display:none}
+.g-foot{position:absolute;bottom:1.5rem;color:rgba(255,255,255,.2);font-size:.5rem;text-align:center;line-height:1.6}
+#hub{display:none;height:100vh;overflow-y:auto}
+.hub-hdr{background:var(--nv);color:white;padding:1rem;text-align:center}
+.hub-hdr .logo{font-family:'Playfair Display',serif;color:var(--gd);font-size:1.6rem;font-weight:900}
+.hub-hdr .tag{font-size:.7rem;color:var(--lt);margin-top:.15rem}
+.hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;padding:1rem;max-width:600px;margin:0 auto}
+.hub-card{background:white;border:2px solid var(--bdr);border-radius:var(--r);padding:1.3rem .8rem;text-align:center;cursor:pointer;transition:.3s;position:relative;overflow:hidden}
+.hub-card:hover{border-color:var(--gd);transform:translateY(-3px);box-shadow:var(--sh)}
+.hub-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.hub-card:nth-child(1)::before{background:var(--tl)}
+.hub-card:nth-child(2)::before{background:var(--gd)}
+.hub-card:nth-child(3)::before{background:var(--gn)}
+.hub-card:nth-child(4)::before{background:var(--bl)}
+.hub-card .h-ic{font-size:2.2rem;margin-bottom:.4rem}
+.hub-card .h-nm{font-family:'Playfair Display',serif;font-size:1rem;color:var(--nv);font-weight:700;margin-bottom:.2rem}
+.hub-card .h-ds{font-size:.7rem;color:var(--md);line-height:1.4}
+.hub-card .h-badge{position:absolute;top:.5rem;right:.5rem;font-size:.5rem;color:var(--lt);background:var(--c2);padding:.15rem .4rem;border-radius:4px}
+.hub-foot{text-align:center;padding:1.2rem;color:var(--lt);font-size:.6rem}
+.tool-frame{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:10}
+.tool-frame.active{display:block}
+.tool-frame iframe{width:100%;height:calc(100% - 36px);border:none}
+.frame-bar{height:36px;background:var(--nv);display:flex;align-items:center;padding:0 .7rem;gap:.4rem}
+.frame-bar .back{background:rgba(255,255,255,.1);border:none;color:var(--gd);padding:.2rem .6rem;border-radius:5px;font-size:.7rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700}.frame-bar .back:hover{background:rgba(255,255,255,.2)}
+.frame-bar .fl{font-family:'Playfair Display',serif;color:var(--gd);font-size:.8rem;font-weight:700}
+.frame-bar .fs{font-size:.6rem;color:var(--lt);margin-left:.2rem}
+@media(max-width:500px){.hub-grid{grid-template-columns:1fr;max-width:350px}}
+</style>
+</head>
+<body>
+<div id="gate">
+  <div class="g-logo">danddee</div>
+  <div class="g-sub">by A3 Smart Security</div>
+  <div class="g-line"></div>
+  <input type="password" class="g-in" id="gp" placeholder="Access Code" autocomplete="off">
+  <button class="g-btn" onclick="login()">Enter</button>
+  <div class="g-err" id="ge">Incorrect code</div>
+  <div class="g-foot">ssu-walkthrough.com<br>Members First · G$D · True North</div>
+</div>
+<div id="hub">
+  <div class="hub-hdr"><div class="logo">danddee</div><div class="tag">A3 Smart Security · Field Operations Hub</div></div>
+  <div class="hub-grid">
+    <div class="hub-card" onclick="window.open('https://ssu-walkthrough.com','_blank')">
+      <div class="h-ic">🏠</div><div class="h-nm">Walkthrough</div><div class="h-ds">13-stop home walkthrough<br>questions & breadcrumbs</div><div class="h-badge">↗ external</div>
+    </div>
+    <div class="hub-card" onclick="openTool('con','Security Proposal')">
+      <div class="h-ic">📋</div><div class="h-nm">Security Proposal</div><div class="h-ds">A la carte quote builder<br>with smart suggestions</div>
+    </div>
+    <div class="hub-card" onclick="openTool('clf','Cloverleaf')">
+      <div class="h-ic">🍀</div><div class="h-nm">Cloverleaf</div><div class="h-ds">Door-to-door tracking<br>18-door pattern & scripts</div>
+    </div>
+    <div class="hub-card" onclick="openTool('wt','Walkthrough Tracker')">
+      <div class="h-ic">📊</div><div class="h-nm">Walkthrough Tracker</div><div class="h-ds">Room-by-room checkoffs<br>progress & member tracking</div>
+    </div>
+  </div>
+  <div class="hub-foot"><strong style="color:var(--gd)">danddee</strong> by A3 Smart Security · Members First · G$D · True North</div>
+</div>
+
+<div class="tool-frame" id="frame-con">
+  <div class="frame-bar"><button class="back" onclick="goHub()">← Hub</button><div class="fl">danddee</div><div class="fs">Security Proposal</div></div>
+  <iframe id="if-con" srcdoc="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;><meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1.0&quot;>
+<meta name=&quot;theme-color&quot; content=&quot;#1A2744&quot;><meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot;>
+<title>A3 Smart Security | Home Consultation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Playfair+Display:wght@700;900&amp;display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f8fafc;--card:#fff;--card2:#f1f5f9;--bdr:#e2e8f0;--nv:#1A2744;--rd:#CC2229;--gd:#D4A843;--tl:#0D9488;--gn:#16A34A;--bl:#2563EB;--wh:#fff;--dk:#1e293b;--md:#64748B;--lt:#94a3b8;--r:12px;--sh:0 2px 12px rgba(0,0,0,.06)}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dk);min-height:100vh}
+/* GATE */
+#gate{position:fixed;inset:0;background:var(--nv);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;z-index:999}#gate.h{display:none}
+.g-l{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--gd);font-weight:900}.g-s{color:var(--tl);font-size:.6rem;letter-spacing:3px;text-transform:uppercase}
+.g-i{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:.55rem .8rem;color:white;font-size:.85rem;width:200px;text-align:center;outline:none}
+.g-b{background:var(--rd);color:white;border:none;padding:.5rem 1.4rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem}
+.g-e{color:#f87171;font-size:.65rem;display:none}
+/* HEADER */
+.hdr{background:var(--nv);color:white;padding:.6rem .8rem;display:flex;align-items:center;gap:.5rem;position:sticky;top:0;z-index:50}
+.hdr .logo{font-family:'Playfair Display',serif;color:var(--gd);font-size:.95rem;font-weight:700}
+.hdr .badge{margin-left:auto;font-size:.6rem;color:var(--gd);background:rgba(212,168,67,.12);padding:.15rem .4rem;border-radius:4px}
+/* MEMBER BAR */
+.mbar{background:white;border-bottom:1px solid var(--bdr);padding:.5rem .8rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.mbar input{background:var(--card2);border:1px solid var(--bdr);border-radius:6px;padding:.35rem .5rem;color:var(--dk);font-size:.8rem;outline:none;font-family:'DM Sans',sans-serif;flex:1;min-width:120px}.mbar input:focus{border-color:var(--gd)}
+.mbar .acts{display:flex;gap:.2rem;margin-left:auto}
+.btn{padding:.3rem .6rem;border-radius:6px;border:none;font-weight:600;cursor:pointer;font-size:.7rem;font-family:'DM Sans',sans-serif;transition:.15s}
+.btn-nv{background:var(--nv);color:white}.btn-gd{background:var(--gd);color:var(--nv)}.btn-tl{background:var(--tl);color:white}.btn-rd{background:var(--rd);color:white}.btn-gh{background:transparent;border:1px solid var(--bdr);color:var(--md)}
+/* NAV */
+.nav{display:flex;overflow-x:auto;gap:.25rem;padding:.4rem .8rem;background:white;border-bottom:1px solid var(--bdr)}
+.nav::-webkit-scrollbar{display:none}
+.nt{flex-shrink:0;padding:.3rem .6rem;border-radius:20px;border:1px solid var(--bdr);background:white;color:var(--md);font-size:.7rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.15s;white-space:nowrap}
+.nt:hover{border-color:var(--gd);color:var(--dk)}
+.nt.a{background:var(--nv);color:white;border-color:var(--nv);font-weight:700}
+.nt.done{background:var(--gn);color:white;border-color:var(--gn)}
+/* ROOM VIEW */
+.room{display:none;padding:.8rem;max-width:700px;margin:0 auto}.room.a{display:block}
+.room-hdr{text-align:center;margin-bottom:.8rem}
+.room-icon{font-size:2.5rem;margin-bottom:.2rem}
+.room-name{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--nv)}
+.room-sub{color:var(--md);font-size:.8rem;font-style:italic;margin-top:.1rem}
+/* OBSERVATION CARDS - what the MEMBER sees */
+.obs{background:white;border:1px solid var(--bdr);border-radius:var(--r);padding:.6rem;margin-bottom:.4rem;box-shadow:var(--sh);display:flex;align-items:flex-start;gap:.5rem;cursor:pointer;transition:.15s}
+.obs:hover{border-color:var(--gd);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.obs.noted{border-left:3px solid var(--gn);background:#f0fdf4}
+.obs .dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:.15s;font-size:.55rem}
+.obs.noted .dot{background:var(--gn);border-color:var(--gn);color:white}
+.obs.noted .dot::after{content:'✓'}
+.obs .body{flex:1}.obs .title{font-weight:700;font-size:.85rem;color:var(--dk);line-height:1.3}
+.obs .detail{font-size:.75rem;color:var(--md);margin-top:.1rem;line-height:1.4}
+/* RECOMMENDATION CARDS - G/B/B */
+.rec-section{margin:.8rem 0}
+.rec-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--nv);margin-bottom:.4rem;text-align:center}
+.recs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem}
+.rec{background:white;border:2px solid var(--bdr);border-radius:var(--r);padding:.6rem;cursor:pointer;transition:.2s;text-align:center;position:relative}
+.rec:hover{border-color:var(--gd);box-shadow:var(--sh)}
+.rec.sel{border-color:var(--nv);background:linear-gradient(135deg,#f0f9ff,#eff6ff);box-shadow:0 4px 16px rgba(26,39,68,.12)}
+.rec.sel::after{content:'✓ Selected';position:absolute;top:-.5rem;right:.5rem;background:var(--nv);color:white;font-size:.55rem;font-weight:700;padding:.1rem .4rem;border-radius:4px}
+.rec-badge{font-size:1.2rem;margin-bottom:.2rem}
+.rec-label{font-weight:700;font-size:.8rem;margin-bottom:.2rem}
+.rec:first-child .rec-label{color:var(--gd)}
+.rec:nth-child(2) .rec-label{color:var(--nv)}
+.rec:last-child .rec-label{color:var(--md)}
+.rec-items{font-size:.7rem;color:var(--md);line-height:1.5;text-align:left}
+/* REP NOTES TOGGLE - hidden from member by default */
+.rep-toggle{background:var(--card2);border:1px solid var(--bdr);border-radius:8px;margin:.4rem 0;overflow:hidden}
+.rep-toggle-btn{width:100%;text-align:left;padding:.4rem .6rem;background:transparent;border:none;color:var(--lt);font-size:.7rem;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:.3rem}
+.rep-toggle-btn:hover{color:var(--md)}
+.rep-content{display:none;padding:.4rem .6rem;border-top:1px solid var(--bdr);font-size:.7rem;color:var(--lt);line-height:1.5}
+.rep-content.show{display:block}
+.rep-content strong{color:var(--tl)}
+/* NOTES */
+.notes-area{margin:.5rem 0}
+.notes-area textarea{width:100%;background:var(--card2);border:1px solid var(--bdr);border-radius:8px;padding:.5rem;color:var(--dk);font-size:.8rem;font-family:'DM Sans',sans-serif;min-height:50px;resize:vertical;outline:none}.notes-area textarea:focus{border-color:var(--gd)}
+.notes-area label{font-size:.7rem;color:var(--md);font-weight:600;margin-bottom:.2rem;display:block}
+/* COMPLETE */
+.complete-btn{width:100%;padding:.6rem;border-radius:var(--r);border:2px solid var(--gn);background:white;color:var(--gn);font-weight:700;font-size:.85rem;cursor:pointer;margin-top:.6rem;font-family:'DM Sans',sans-serif;transition:.2s}
+.complete-btn:hover,.complete-btn.dn{background:var(--gn);color:white}
+/* NAV ARROWS */
+.nav-arrows{display:flex;gap:.4rem;margin-top:.6rem}
+.nav-arrows button{flex:1;padding:.5rem;border-radius:8px;border:1px solid var(--bdr);background:white;color:var(--nv);font-weight:700;font-size:.8rem;cursor:pointer;font-family:'DM Sans',sans-serif}.nav-arrows button:hover{background:var(--nv);color:white;border-color:var(--nv)}
+.foot{text-align:center;padding:1.5rem .8rem;color:var(--lt);font-size:.6rem}
+@media(max-width:500px){.recs{grid-template-columns:1fr}.mbar{flex-direction:column;align-items:stretch}.mbar .acts{margin-left:0;justify-content:flex-start}}
+</style>
+</head>
+<body>
+<div id=&quot;app&quot;>
+<div class=&quot;hdr&quot;><div class=&quot;logo&quot;>A3 Smart Security</div><div class=&quot;badge&quot; id=&quot;mbadge&quot;>Home Consultation</div></div>
+<div class=&quot;mbar&quot; id=&quot;mbar&quot;><input type=&quot;text&quot; id=&quot;mn&quot; placeholder=&quot;Member Name&quot; oninput=&quot;sv()&quot;><input type=&quot;text&quot; id=&quot;ma&quot; placeholder=&quot;Address&quot; oninput=&quot;sv()&quot;><div class=&quot;acts&quot;><button class=&quot;btn btn-gd&quot; onclick=&quot;eml()&quot;>📧 Send</button><button class=&quot;btn btn-gh&quot; onclick=&quot;cpy()&quot;>📋</button><button class=&quot;btn btn-gh&quot; onclick=&quot;rst()&quot;>↺</button></div></div>
+<div class=&quot;nav&quot; id=&quot;nav&quot;></div>
+<div id=&quot;rooms&quot;></div>
+<div class=&quot;foot&quot;>A3 Smart Security · Members First · Powered by Qolsys IQ · Alarm.com</div>
+</div>
+
+<script>
+const ROOMS=[
+{id:&quot;r0&quot;,icon:&quot;🏠&quot;,name:&quot;Your Driveway&quot;,sub:&quot;First impressions of your home's security posture&quot;,
+obs:[
+  {t:&quot;Entry Point Visibility&quot;,d:&quot;How visible are your doors and windows from the street? Low visibility = higher risk.&quot;,rep:&quot;Corner lot = double exposure. Dense landscaping hides entry points.&quot;},
+  {t:&quot;Exterior Lighting&quot;,d:&quot;Well-lit homes deter 90% of opportunistic break-ins.&quot;,rep:&quot;Check for dark zones. Motion-activated lighting recommendation.&quot;},
+  {t:&quot;Current Security Signage&quot;,d:&quot;Visible deterrents signal a protected home.&quot;,rep:&quot;Look for old stickers, dead cameras, no signage = opportunity.&quot;},
+  {t:&quot;Vehicle &amp; Package Safety&quot;,d:&quot;Driveway assets and deliveries left exposed.&quot;,rep:&quot;Nice cars = asset mindset. Amazon boxes = theft risk. Kid stuff = protection emotion.&quot;},
+],
+gbb:{best:&quot;4 outdoor cameras + smart garage + motion lighting + doorbell&quot;,better:&quot;Doorbell camera + 1 outdoor camera + driveway motion&quot;,good:&quot;Video doorbell + front door sensor&quot;},
+repNotes:&quot;Set expert frame early: 'From out here I can already count a few spots where you'd want coverage.' Assess before they tell you anything.&quot;},
+
+{id:&quot;r1&quot;,icon:&quot;🚪&quot;,name:&quot;Your Front Door&quot;,sub:&quot;34% of break-ins happen right here — the #1 entry point&quot;,
+obs:[
+  {t:&quot;Door Lock Quality&quot;,d:&quot;Your deadbolt and strike plate are the first line of defense. Many builder-grade plates can be compromised with minimal force.&quot;,rep:&quot;Strike plate demo: 'One kick and most doors open.' Smart lock pitch.&quot;},
+  {t:&quot;Who Has Access?&quot;,d:&quot;Keys with family, cleaners, dog walkers, or neighbors create multiple access points to manage.&quot;,rep:&quot;ASK: 'Who has a key?' → leads to unique access codes per person.&quot;},
+  {t:&quot;Child Arrival Safety&quot;,d:&quot;Know the moment your family arrives home — with real-time notifications.&quot;,rep:&quot;ASK: 'Do your kids get home before you?' GOLD trigger for doorbell + smart lock + arrival alerts.&quot;},
+  {t:&quot;Smart Lock Benefits&quot;,d:&quot;Lock and unlock from anywhere. Unique codes for every person. Auto-lock when you leave. Full activity log.&quot;,rep:&quot;Close: 'That did-I-lock-it anxiety just goes away.'&quot;},
+],
+gbb:{best:&quot;Smart deadbolt + video doorbell + entry motion + child arrival automation&quot;,better:&quot;Video doorbell + smart lock with unique codes + auto-lock&quot;,good:&quot;Video doorbell + door contact sensor&quot;},
+repNotes:&quot;Strongest emotional trigger: 'Imagine getting a notification the second your kid walks through this door.' Parental instinct closes here.&quot;},
+
+{id:&quot;r2&quot;,icon:&quot;🛋️&quot;,name:&quot;Your Living Room&quot;,sub:&quot;The sliding door is the #2 residential entry point&quot;,
+obs:[
+  {t:&quot;Sliding Glass Door&quot;,d:&quot;This is the second most common entry point in residential break-ins. In 9 out of 10 homes, there's no sensor on it.&quot;,rep:&quot;THIS is the single most effective observation. Say it casually. Watch them look at the slider.&quot;},
+  {t:&quot;Large Windows&quot;,d:&quot;Ground-floor windows accessible from outside should be monitored for both glass break and opening.&quot;,rep:&quot;Glass break sensor covers 25ft radius. One per room.&quot;},
+  {t:&quot;Smart Home Integration&quot;,d:&quot;Your existing Alexa, Google Home, or smart TV can integrate with your security system for voice control.&quot;,rep:&quot;'Walk in, say I'm home — system disarms.' Wow factor.&quot;},
+  {t:&quot;Daily Monitoring Cost&quot;,d:&quot;Complete professional monitoring is under $1 per day — less than a cup of coffee.&quot;,rep:&quot;Pre-handle price objection: 'When I show you the daily breakdown, it's a no-brainer.'&quot;},
+],
+gbb:{best:&quot;Interior cameras + pet-immune motion + glass break + smart home automation&quot;,better:&quot;Indoor camera + glass break sensor + smart lighting&quot;,good:&quot;Window/door sensors + motion detector + slider sensor&quot;},
+repNotes:&quot;The slider line sells more sensors than any brochure. 9/10 homes nothing on it. Drop it casually.&quot;},
+
+{id:&quot;r3&quot;,icon:&quot;🍽️&quot;,name:&quot;Your Kitchen&quot;,sub:&quot;Beyond security — life safety starts here&quot;,
+obs:[
+  {t:&quot;Smoke Detection&quot;,d:&quot;Monitored smoke detectors call 911 automatically — even if your family is asleep. Builder-grade detectors only help if someone is awake to hear them.&quot;,rep:&quot;ASK: 'When's the last time you tested that?' Most don't know. Huge opener.&quot;},
+  {t:&quot;Carbon Monoxide Protection&quot;,d:&quot;CO is completely odorless and colorless. Any gas appliance creates CO risk. Monitored detection provides early warning and emergency dispatch.&quot;,rep:&quot;ASK: 'Gas range — do you have CO detectors?' Education = trust.&quot;},
+  {t:&quot;Water Leak Prevention&quot;,d:&quot;The average water damage claim is $11,000. A small sensor under your dishwasher or sink catches leaks before they become disasters.&quot;,rep:&quot;'A $30 sensor prevents an $11K claim. One member caught theirs at 2 AM.'&quot;},
+],
+gbb:{best:&quot;Whole-home smoke/CO + water sensors all zones + auto shutoff + thermostat&quot;,better:&quot;Smoke/CO combo + water sensor at dishwasher and sink&quot;,good:&quot;Monitored smoke detector + CO detector&quot;},
+repNotes:&quot;This is where you expand beyond burglary. Life safety closes here. Gas stove = CO. Water lines = leak sensor. Kitchen door to garage = forgotten sensor.&quot;},
+
+{id:&quot;r4&quot;,icon:&quot;🛏️&quot;,name:&quot;Your Master Bedroom&quot;,sub:&quot;Peace of mind where it matters most&quot;,
+obs:[
+  {t:&quot;The 3AM Scenario&quot;,d:&quot;Most homeowners have been woken by an unexpected noise. With professional monitoring, you're never alone in that moment — help is seconds away.&quot;,rep:&quot;ASK: 'Ever been woken at 3AM not knowing if it was real?' Almost 100% yes. DEEPEST fear.&quot;},
+  {t:&quot;Bedside Emergency Access&quot;,d:&quot;A panic button within arm's reach means help with one press — no phone, no fumbling in the dark.&quot;,rep:&quot;'One press. Police on the way. Easiest yes in the entire install.'&quot;},
+  {t:&quot;Window Security&quot;,d:&quot;Ground-floor or accessible bedroom windows should be monitored — especially in sleeping areas.&quot;,rep:&quot;Check for sliding door to deck/balcony. Safe bolted or portable? Medical equipment?&quot;},
+],
+gbb:{best:&quot;Full bedroom sensors + panic button + medical alert + crash protection + hall motion&quot;,better:&quot;Window sensors + bedside panic button + hallway motion&quot;,good:&quot;Window sensor + smoke detector&quot;},
+repNotes:&quot;'You're not alone in that moment. We're watching with you.' — MOST POWERFUL PHRASE. Use it once. Use it HERE. Panic button = easiest yes.&quot;},
+
+{id:&quot;r5&quot;,icon:&quot;👧&quot;,name:&quot;Children's Rooms&quot;,sub:&quot;Protecting what matters most to you&quot;,
+obs:[
+  {t:&quot;Window Monitoring&quot;,d:&quot;Ground-floor bedroom windows in children's rooms deserve dedicated sensors — know the moment one opens.&quot;,rep:&quot;'This window — I'm putting a sensor on it. Period.' Firm protective energy.&quot;},
+  {t:&quot;Arrival Notifications&quot;,d:&quot;Know when your children arrive home with real-time smart lock notifications tied to their unique access code.&quot;,rep:&quot;'Most common parent call: I just want to know when they're home. We automate that.'&quot;},
+  {t:&quot;Wandering Alerts&quot;,d:&quot;Motion sensors and door chimes in hallways alert you if little ones are up and moving at night.&quot;,rep:&quot;ASK about age and distance from master. Distance = vulnerability.&quot;},
+],
+gbb:{best:&quot;Full kids' floor sensors + arrival notifications + wandering alerts&quot;,better:&quot;Window sensors + child arrival notification + smart lock code&quot;,good:&quot;Window sensors + hallway motion + door chime&quot;},
+repNotes:&quot;Connect every sensor to the child's NAME. 'When Emma comes home...' not 'when the door opens.' Personalization = close.&quot;},
+
+{id:&quot;r6&quot;,icon:&quot;🚗&quot;,name:&quot;Your Garage&quot;,sub:&quot;One of the top 3 residential entry points&quot;,
+obs:[
+  {t:&quot;The Garage Door Question&quot;,d:&quot;Have you ever driven away and couldn't remember if the garage was closed? With smart control, check and close from anywhere — your phone, your office, on vacation.&quot;,rep:&quot;100% of homeowners say yes. Best smart garage close in the entire walkthrough.&quot;},
+  {t:&quot;Emergency Release Vulnerability&quot;,d:&quot;The emergency release cable on most garage doors can be accessed from outside with a simple tool in seconds. A sensor detects this immediately.&quot;,rep:&quot;LIVE DEMO if possible: 'See that cable? Wire hook, 6 seconds, door opens from outside.' Most impactful demo.&quot;},
+  {t:&quot;House-to-Garage Door&quot;,d:&quot;The door connecting your garage to your home is often the least-secured entry point — frequently left unlocked.&quot;,rep:&quot;Almost never sensed. Easy add. Mention the asset value: tools, bikes, vehicles.&quot;},
+],
+gbb:{best:&quot;Smart garage controller + interior camera + cable guard + smart lock on house door + access log&quot;,better:&quot;Smart garage controller + auto-close rule + motion detector&quot;,good:&quot;Garage door tilt sensor + house-to-garage contact sensor&quot;},
+repNotes:&quot;The release cable demo creates IMMEDIATE alarm → then the solution. 'You'll never drive back to check again.' Most satisfying use case.&quot;},
+
+{id:&quot;r7&quot;,icon:&quot;🌿&quot;,name:&quot;Your Backyard&quot;,sub:&quot;Completing the picture — every angle covered&quot;,
+obs:[
+  {t:&quot;Perimeter Camera Coverage&quot;,d:&quot;See every corner of your property from your phone — day or night, from anywhere in the world.&quot;,rep:&quot;Future-pace: 'How would that change things?' Gets them imagining the outcome.&quot;},
+  {t:&quot;Pool &amp; Yard Safety&quot;,d:&quot;Motion alerts near the pool provide an extra layer of safety for children and pets.&quot;,rep:&quot;Pool question is a near-instant close for families. Liability angle.&quot;},
+  {t:&quot;Deterrence, Not Just Recording&quot;,d:&quot;Visible cameras don't just record — they prevent. Studies show homes with visible security cameras are 300% less likely to be targeted.&quot;,rep:&quot;'A thief sees a camera and picks a different house. You become the hard target.'&quot;},
+],
+gbb:{best:&quot;360° outdoor cameras + perimeter zones + smart flood lights + pool alert&quot;,better:&quot;2 outdoor cameras + motion flood light + pool camera&quot;,good:&quot;1 outdoor camera + back door sensor&quot;},
+repNotes:&quot;TRANSITION TO CLOSE: 'I've seen everything I need. Let me show you exactly what I'd put in this home if it were mine.' The phrase 'if it were mine' = ultimate trust.&quot;},
+
+{id:&quot;r8&quot;,icon:&quot;☕&quot;,name:&quot;Your Recommendation&quot;,sub:&quot;Here's what I'd put in this home if it were mine&quot;,
+obs:[
+  {t:&quot;Your Concerns Addressed&quot;,d:&quot;Everything we discussed today — I heard you, and this recommendation is built specifically for your home and your family.&quot;,rep:&quot;CALLBACK: 'You told me [X], mentioned [Y], I noticed [Z].' Use THEIR words.&quot;},
+  {t:&quot;Professional Monitoring&quot;,d:&quot;24/7 monitoring with under 30-second dispatch. Visual verification through cameras. Two-way voice through your panel. Never alone.&quot;,rep:&quot;Specificity sells: 'Within 30 seconds of that alarm, a trained operator is looking at your cameras.'&quot;},
+  {t:&quot;Investment, Not Expense&quot;,d:&quot;Complete protection for your home is $1.67 per day — less than the coffee on your counter right now. One prevented incident pays for the entire system.&quot;,rep:&quot;AFTER PRICE: STOP TALKING. First person to speak loses. Silence. Wait.&quot;},
+],
+gbb:{best:&quot;Full system — every concern addressed. Complete peace of mind.&quot;,better:&quot;Core protection + cameras + smart lock. Everything critical covered.&quot;,good:&quot;Entry sensors + panel + monitoring + app. Start here, grow over time.&quot;},
+repNotes:&quot;Always start at BEST. Let them step down. 'This isn't a cost. It's a decision about what your family is worth.' Final close line.&quot;},
+];
+
+let S={m:{n:'',a:''},stops:{},cur:'r0',col:false};
+
+function gc(){if(document.getElementById('gp').value.toLowerCase().trim()==='ssu2026'){ld();renderAll()}else document.getElementById('ge').style.display='block'}
+document.getElementById('gp').addEventListener('keypress',e=>{if(e.key==='Enter')gc()});
+
+function renderAll(){renderNav();renderRooms();go(S.cur||'r0')}
+
+function renderNav(){
+  document.getElementById('nav').innerHTML=ROOMS.map(r=>{
+    const d=S.stops[r.id]?.complete;
+    return`<button class=&quot;nt ${r.id===S.cur?'a':''} ${d?'done':''}&quot; onclick=&quot;go('${r.id}')&quot;>${r.icon} ${r.name.replace('Your ','')}</button>`;
+  }).join('');
+}
+
+function renderRooms(){
+  document.getElementById('rooms').innerHTML=ROOMS.map((r,ri)=>{
+    const sd=S.stops[r.id]||{obs:{},gbb:'',notes:'',complete:false};
+    let h=`<div class=&quot;room ${r.id===S.cur?'a':''}&quot; id=&quot;rm-${r.id}&quot;>`;
+    h+=`<div class=&quot;room-hdr&quot;><div class=&quot;room-icon&quot;>${r.icon}</div><div class=&quot;room-name&quot;>${r.name}</div><div class=&quot;room-sub&quot;>${r.sub}</div></div>`;
+
+    // OBSERVATIONS - member-facing
+    r.obs.forEach((o,oi)=>{
+      const noted=sd.obs['o'+oi];
+      h+=`<div class=&quot;obs ${noted?'noted':''}&quot; onclick=&quot;tgObs('${r.id}','o${oi}')&quot;>`;
+      h+=`<div class=&quot;dot&quot;></div>`;
+      h+=`<div class=&quot;body&quot;><div class=&quot;title&quot;>${o.t}</div><div class=&quot;detail&quot;>${o.d}</div></div>`;
+      h+=`</div>`;
+    });
+
+    // REP NOTES - hidden toggle
+    const hasRep=r.obs.some(o=>o.rep)||r.repNotes;
+    if(hasRep){
+      h+=`<div class=&quot;rep-toggle&quot;><button class=&quot;rep-toggle-btn&quot; onclick=&quot;tgRep(this)&quot;>🔒 Rep Notes <span style=&quot;font-size:.6rem;margin-left:auto&quot;>▶</span></button>`;
+      h+=`<div class=&quot;rep-content&quot;>`;
+      r.obs.forEach(o=>{if(o.rep)h+=`<div style=&quot;margin-bottom:.3rem&quot;><strong>${o.t}:</strong> ${o.rep}</div>`});
+      if(r.repNotes)h+=`<div style=&quot;margin-top:.3rem;padding-top:.3rem;border-top:1px solid var(--bdr)&quot;><strong>Strategy:</strong> ${r.repNotes}</div>`;
+      h+=`</div></div>`;
+    }
+
+    // G/B/B RECOMMENDATIONS - clean presentation
+    if(r.gbb.best){
+      h+=`<div class=&quot;rec-section&quot;><div class=&quot;rec-title&quot;>Recommended Protection</div><div class=&quot;recs&quot;>`;
+      h+=`<div class=&quot;rec ${sd.gbb==='best'?'sel':''}&quot; onclick=&quot;sGbb('${r.id}','best')&quot;><div class=&quot;rec-badge&quot;>🥇</div><div class=&quot;rec-label&quot;>Complete</div><div class=&quot;rec-items&quot;>${r.gbb.best}</div></div>`;
+      h+=`<div class=&quot;rec ${sd.gbb==='better'?'sel':''}&quot; onclick=&quot;sGbb('${r.id}','better')&quot;><div class=&quot;rec-badge&quot;>🥈</div><div class=&quot;rec-label&quot;>Enhanced</div><div class=&quot;rec-items&quot;>${r.gbb.better}</div></div>`;
+      h+=`<div class=&quot;rec ${sd.gbb==='good'?'sel':''}&quot; onclick=&quot;sGbb('${r.id}','good')&quot;><div class=&quot;rec-badge&quot;>🥉</div><div class=&quot;rec-label&quot;>Essential</div><div class=&quot;rec-items&quot;>${r.gbb.good}</div></div>`;
+      h+=`</div></div>`;
+    }
+
+    // NOTES
+    h+=`<div class=&quot;notes-area&quot;><label>Notes</label><textarea placeholder=&quot;Observations for this area...&quot; oninput=&quot;sNotes('${r.id}',this.value)&quot;>${sd.notes||''}</textarea></div>`;
+
+    // COMPLETE + NAV
+    h+=`<button class=&quot;complete-btn ${sd.complete?'dn':''}&quot; onclick=&quot;tgComp('${r.id}')&quot;>${sd.complete?'✅ Room Complete':'Mark Room Complete'}</button>`;
+    h+=`<div class=&quot;nav-arrows&quot;>`;
+    if(ri>0)h+=`<button onclick=&quot;go('${ROOMS[ri-1].id}')&quot;>← ${ROOMS[ri-1].name.replace('Your ','')}</button>`;
+    if(ri<ROOMS.length-1)h+=`<button onclick=&quot;go('${ROOMS[ri+1].id}')&quot;>Next: ${ROOMS[ri+1].name.replace('Your ','')} →</button>`;
+    h+=`</div>`;
+    h+=`</div>`;
+    return h;
+  }).join('');
+}
+
+function go(id){S.cur=id;document.querySelectorAll('.room').forEach(r=>r.classList.remove('a'));document.getElementById('rm-'+id)?.classList.add('a');renderNav();sv();window.scrollTo({top:0,behavior:'smooth'})}
+function ens(id){if(!S.stops[id])S.stops[id]={obs:{},gbb:'',notes:'',complete:false}}
+function tgObs(id,k){ens(id);S.stops[id].obs[k]=!S.stops[id].obs[k];renderRooms();go(id);sv()}
+function sGbb(id,l){ens(id);S.stops[id].gbb=S.stops[id].gbb===l?'':l;renderRooms();go(id);sv()}
+function sNotes(id,v){ens(id);S.stops[id].notes=v;sv()}
+function tgComp(id){ens(id);S.stops[id].complete=!S.stops[id].complete;renderAll();sv()}
+function tgRep(btn){btn.nextElementSibling.classList.toggle('show');btn.querySelector('span').textContent=btn.nextElementSibling.classList.contains('show')?'▼':'▶'}
+
+function sv(){S.m.n=document.getElementById('mn').value;S.m.a=document.getElementById('ma').value;document.getElementById('mbadge').textContent=S.m.n?`${S.m.n}'s Consultation`:'Home Consultation';try{localStorage.setItem('ssu_consult',JSON.stringify(S))}catch(e){}}
+function ld(){try{const s=localStorage.getItem('ssu_consult');if(s)S=JSON.parse(s);document.getElementById('mn').value=S.m?.n||'';document.getElementById('ma').value=S.m?.a||''}catch(e){}}
+
+function genRpt(){let t='─────────────────────────────\n  A3 SMART SECURITY\n  Home Consultation Summary\n─────────────────────────────\n\n';t+=`Member: ${S.m.n||'—'}\nAddress: ${S.m.a||'—'}\nDate: ${new Date().toLocaleDateString()}\n\n`;ROOMS.forEach(r=>{const sd=S.stops[r.id];if(!sd)return;const noted=Object.keys(sd.obs||{}).filter(k=>sd.obs[k]).length;if(noted||sd.gbb||sd.notes||sd.complete){t+=`${r.icon} ${r.name} ${sd.complete?'✅':''}\n`;if(noted)t+=`  Observations noted: ${noted}\n`;if(sd.gbb)t+=`  Protection level: ${sd.gbb==='best'?'Complete':sd.gbb==='better'?'Enhanced':'Essential'}\n`;if(sd.notes)t+=`  Notes: ${sd.notes}\n`;t+='\n'}});t+='─────────────────────────────\nA3 Smart Security\nMembers First · G$D · True North\n';return t}
+function eml(){window.open(`mailto:name@a3sfi.com?subject=${encodeURIComponent('Consultation — '+(S.m.n||'Member'))}&amp;body=${encodeURIComponent(genRpt())}`)}
+function cpy(){navigator.clipboard.writeText(genRpt()).then(()=>alert('Copied!')).catch(()=>alert('Failed'))}
+function rst(){if(!confirm('Reset for next consultation?'))return;S={m:{n:'',a:''},stops:{},cur:'r0',col:false};localStorage.removeItem('ssu_consult');document.getElementById('mn').value='';document.getElementById('ma').value='';renderAll()}
+</script>
+</body>
+</html>
+"></iframe>
+</div>
+<div class="tool-frame" id="frame-clf">
+  <div class="frame-bar"><button class="back" onclick="goHub()">← Hub</button><div class="fl">danddee</div><div class="fs">Cloverleaf</div></div>
+  <iframe id="if-clf" srcdoc="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<meta name=&quot;theme-color&quot; content=&quot;#0F1A2E&quot;>
+<meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot;>
+<title>SSU Cloverleaf | Field Operations Tool</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Playfair+Display:wght@700;900&amp;display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#0F1A2E;--navy2:#1A2744;--navy3:#243656;--red:#CC2229;--gold:#D4A843;--teal:#0D9488;--green:#16A34A;--blue:#2563EB;--purple:#7C3AED;--white:#FFFFFF;--off:#F5F6FA;--dark:#1E293B;--mid:#64748B;--lt:#CBD5E1;--radius:12px;--shadow:0 4px 20px rgba(0,0,0,0.3)}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;overflow-x:hidden}
+/* === GATE === */
+#gate{position:fixed;inset:0;background:linear-gradient(135deg,#0F1A2E,#1A2744);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:1rem}
+#gate.hidden{display:none}
+.gate-logo{font-family:'Playfair Display',serif;font-size:2.5rem;color:var(--gold);font-weight:900;letter-spacing:2px}
+.gate-sub{color:var(--teal);font-size:.85rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:1rem}
+.gate-input{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:.75rem 1.2rem;color:var(--white);font-size:1rem;width:260px;text-align:center;outline:none}
+.gate-input:focus{border-color:var(--gold)}
+.gate-btn{background:var(--red);color:white;border:none;padding:.7rem 2rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:.9rem;letter-spacing:1px}
+.gate-btn:hover{background:#E8444A}
+.gate-err{color:var(--red);font-size:.8rem;display:none}
+.gate-foot{position:absolute;bottom:1.5rem;color:var(--mid);font-size:.7rem;text-align:center}
+/* === NAV === */
+nav{background:rgba(15,26,46,.95);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);padding:.6rem 1rem;display:flex;align-items:center;gap:.8rem;overflow-x:auto;position:sticky;top:0;z-index:50}
+nav .brand{font-family:'Playfair Display',serif;color:var(--gold);font-size:1.1rem;font-weight:700;white-space:nowrap;margin-right:auto}
+nav button{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--lt);padding:.4rem .8rem;border-radius:6px;font-size:.75rem;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:.2s}
+nav button:hover,nav button.active{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:700}
+/* === PANELS === */
+.panel{display:none;padding:1rem;max-width:800px;margin:0 auto}
+.panel.active{display:block}
+h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);margin-bottom:.3rem}
+h3{font-size:1rem;color:var(--teal);margin:1rem 0 .5rem;font-weight:700}
+.subtitle{color:var(--mid);font-size:.85rem;margin-bottom:1rem;font-style:italic}
+/* === INSTALL SETUP === */
+.setup-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:1.2rem;margin-bottom:1rem}
+.setup-card label{display:block;color:var(--lt);font-size:.8rem;margin-bottom:.3rem;font-weight:500}
+.setup-card input,.setup-card select{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:.6rem .8rem;color:var(--white);font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:.6rem}
+.setup-card input:focus{border-color:var(--gold)}
+.setup-card .row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.2rem;border-radius:8px;border:none;font-weight:700;cursor:pointer;font-size:.85rem;font-family:'DM Sans',sans-serif;transition:.2s}
+.btn-red{background:var(--red);color:white}.btn-red:hover{background:#E8444A}
+.btn-gold{background:var(--gold);color:var(--navy)}.btn-gold:hover{filter:brightness(1.1)}
+.btn-teal{background:var(--teal);color:white}.btn-teal:hover{filter:brightness(1.1)}
+.btn-outline{background:transparent;border:1px solid var(--mid);color:var(--lt)}.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.btn-sm{padding:.4rem .8rem;font-size:.75rem}
+/* === CLOVERLEAF GRID === */
+.clover-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;margin:1rem 0;padding:1rem;background:rgba(255,255,255,.02);border-radius:var(--radius);border:1px solid rgba(255,255,255,.08)}
+.clover-grid .street{grid-column:1/-1;text-align:center;color:var(--mid);font-size:.7rem;padding:.3rem;border-top:2px dashed rgba(255,255,255,.1);margin:.3rem 0;letter-spacing:3px;text-transform:uppercase}
+.door-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.5rem;text-align:center;cursor:pointer;transition:.2s;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;position:relative}
+.door-card:hover{border-color:var(--gold);background:rgba(212,168,67,.08)}
+.door-card .door-num{font-size:.7rem;color:var(--mid)}
+.door-card .door-status{font-size:.65rem;font-weight:700;padding:.1rem .4rem;border-radius:4px;margin-top:.1rem}
+.door-card.install{background:rgba(204,34,41,.15);border-color:var(--red)}
+.door-card.install .door-num{color:var(--red);font-weight:700}
+.door-card[data-status=&quot;knocked&quot;]{border-color:var(--gold);background:rgba(212,168,67,.1)}
+.door-card[data-status=&quot;conversation&quot;]{border-color:var(--teal);background:rgba(13,148,136,.1)}
+.door-card[data-status=&quot;walkthrough&quot;]{border-color:var(--blue);background:rgba(37,99,235,.1)}
+.door-card[data-status=&quot;closed&quot;]{border-color:var(--green);background:rgba(22,163,74,.15)}
+.door-card[data-status=&quot;handoff&quot;]{border-color:var(--purple);background:rgba(124,58,237,.1)}
+.door-card[data-status=&quot;followup&quot;]{border-color:var(--gold);background:rgba(212,168,67,.08)}
+.status-legend{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0}
+.legend-item{display:flex;align-items:center;gap:.3rem;font-size:.7rem;color:var(--lt)}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+/* === DOOR MODAL === */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100;padding:1rem}
+.modal-overlay.show{display:flex}
+.modal{background:var(--navy2);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:1.5rem;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
+.modal h3{color:var(--gold);margin-top:0}
+.modal label{display:block;color:var(--lt);font-size:.8rem;margin-bottom:.2rem;margin-top:.5rem}
+.modal input,.modal select,.modal textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:.5rem;color:var(--white);font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none}
+.modal textarea{min-height:60px;resize:vertical}
+.modal .btn-row{display:flex;gap:.5rem;margin-top:1rem}
+/* === SCRIPTS === */
+.script-card{background:rgba(255,255,255,.04);border-left:4px solid var(--red);border-radius:0 var(--radius) var(--radius) 0;padding:1rem;margin-bottom:.8rem}
+.script-card.teal{border-left-color:var(--teal)}
+.script-card.green{border-left-color:var(--green)}
+.script-card.gold{border-left-color:var(--gold)}
+.script-card.blue{border-left-color:var(--blue)}
+.script-card.purple{border-left-color:var(--purple)}
+.script-label{font-weight:700;font-size:.8rem;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem}
+.script-text{color:var(--lt);font-size:.9rem;line-height:1.5;font-style:italic}
+.script-note{color:var(--mid);font-size:.75rem;margin-top:.4rem}
+/* === STATS BAR === */
+.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:1rem 0}
+.stat-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.6rem;text-align:center}
+.stat-num{font-size:1.5rem;font-weight:900;font-family:'Playfair Display',serif}
+.stat-label{font-size:.65rem;color:var(--mid);text-transform:uppercase;letter-spacing:1px}
+/* === EXPORT === */
+.export-preview{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:1rem;font-size:.8rem;color:var(--lt);white-space:pre-wrap;max-height:300px;overflow-y:auto;margin:1rem 0;font-family:monospace}
+/* === RESPONSIVE === */
+@media(max-width:600px){
+  .clover-grid{grid-template-columns:repeat(4,1fr);gap:.3rem;padding:.5rem}
+  .stats-bar{grid-template-columns:repeat(2,1fr)}
+  .setup-card .row{grid-template-columns:1fr}
+  nav{gap:.4rem}
+  nav .brand{font-size:.9rem}
+}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id=&quot;gate&quot;>
+  <div class=&quot;gate-logo&quot;>SSU</div>
+  <div class=&quot;gate-sub&quot;>Cloverleaf Field Tool</div>
+  <input type=&quot;password&quot; class=&quot;gate-input&quot; id=&quot;gatePass&quot; placeholder=&quot;Access Password&quot; autocomplete=&quot;off&quot;>
+  <button class=&quot;gate-btn&quot; onclick=&quot;checkGate()&quot;>🔒 ENTER</button>
+  <div class=&quot;gate-err&quot; id=&quot;gateErr&quot;>⚠ Incorrect password. Try again.</div>
+  <div class=&quot;gate-foot&quot;>Members First · G$D · True North<br>A3 Smart Home · Field Ops v1.0 · © 2026</div>
+</div>
+
+<!-- NAV -->
+<nav id=&quot;mainNav&quot; style=&quot;display:none&quot;>
+  <div class=&quot;brand&quot;>🍀 CLOVERLEAF</div>
+  <button class=&quot;active&quot; onclick=&quot;showPanel('setup')&quot;>📋 Setup</button>
+  <button onclick=&quot;showPanel('clover')&quot;>🏘️ Doors</button>
+  <button onclick=&quot;showPanel('scripts')&quot;>🗣️ Scripts</button>
+  <button onclick=&quot;showPanel('handoff')&quot;>🤝 Handoff</button>
+  <button onclick=&quot;showPanel('export')&quot;>📤 Export</button>
+</nav>
+
+<!-- PANEL: SETUP -->
+<div class=&quot;panel active&quot; id=&quot;panel-setup&quot;>
+  <h2>Install Setup</h2>
+  <p class=&quot;subtitle&quot;>Start each install day here. Enter the install address to map your cloverleaf.</p>
+  <div class=&quot;setup-card&quot;>
+    <label>📍 Install Address</label>
+    <input type=&quot;text&quot; id=&quot;installAddr&quot; placeholder=&quot;123 Main St&quot; value=&quot;&quot;>
+    <div class=&quot;row&quot;>
+      <div><label>📅 Date</label><input type=&quot;date&quot; id=&quot;installDate&quot;></div>
+      <div><label>👤 Your Name</label><input type=&quot;text&quot; id=&quot;repName&quot; placeholder=&quot;Rep name&quot;></div>
+    </div>
+    <div class=&quot;row&quot;>
+      <div><label>🔧 Tech Name</label><input type=&quot;text&quot; id=&quot;techName&quot; placeholder=&quot;Tech name&quot;></div>
+      <div><label>🏠 Member Name</label><input type=&quot;text&quot; id=&quot;memberName&quot; placeholder=&quot;Install member&quot;></div>
+    </div>
+    <div style=&quot;margin-top:.8rem;display:flex;gap:.5rem;flex-wrap:wrap&quot;>
+      <button class=&quot;btn btn-gold&quot; onclick=&quot;startCloverleaf()&quot;>🍀 Start Cloverleaf</button>
+      <button class=&quot;btn btn-outline&quot; onclick=&quot;loadSaved()&quot;>📂 Load Previous</button>
+      <button class=&quot;btn btn-outline&quot; onclick=&quot;resetAll()&quot; style=&quot;border-color:var(--red);color:var(--red)&quot;>↺ Reset All</button>
+    </div>
+  </div>
+  <div class=&quot;setup-card&quot; style=&quot;border-left:3px solid var(--gold)&quot;>
+    <div style=&quot;font-weight:700;color:var(--gold);font-size:.85rem;margin-bottom:.4rem&quot;>🍀 THE PATTERN</div>
+    <div style=&quot;color:var(--lt);font-size:.85rem;line-height:1.6&quot;>
+      <strong style=&quot;color:var(--teal)&quot;>4 RIGHT</strong> of the install + corner house<br>
+      <strong style=&quot;color:var(--teal)&quot;>4 LEFT</strong> of the install + corner house<br>
+      <strong style=&quot;color:var(--green)&quot;>8 ACROSS</strong> the street directly facing<br>
+      <strong style=&quot;color:var(--gold)&quot;>= 16–18 doors per install</strong> · Education first · Invitation second
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: CLOVERLEAF DOORS -->
+<div class=&quot;panel&quot; id=&quot;panel-clover&quot;>
+  <h2>Cloverleaf Tracker</h2>
+  <p class=&quot;subtitle&quot; id=&quot;cloverSubtitle&quot;>Map your doors and track every interaction.</p>
+  <div class=&quot;stats-bar&quot; id=&quot;statsBar&quot;>
+    <div class=&quot;stat-box&quot;><div class=&quot;stat-num&quot; style=&quot;color:var(--gold)&quot; id=&quot;statKnocked&quot;>0</div><div class=&quot;stat-label&quot;>Knocked</div></div>
+    <div class=&quot;stat-box&quot;><div class=&quot;stat-num&quot; style=&quot;color:var(--teal)&quot; id=&quot;statConvo&quot;>0</div><div class=&quot;stat-label&quot;>Conversations</div></div>
+    <div class=&quot;stat-box&quot;><div class=&quot;stat-num&quot; style=&quot;color:var(--blue)&quot; id=&quot;statWalk&quot;>0</div><div class=&quot;stat-label&quot;>Walkthroughs</div></div>
+    <div class=&quot;stat-box&quot;><div class=&quot;stat-num&quot; style=&quot;color:var(--green)&quot; id=&quot;statClosed&quot;>0</div><div class=&quot;stat-label&quot;>Closed</div></div>
+    <div class=&quot;stat-box&quot;><div class=&quot;stat-num&quot; style=&quot;color:var(--purple)&quot; id=&quot;statHandoff&quot;>0</div><div class=&quot;stat-label&quot;>Handoffs</div></div>
+    <div class=&quot;stat-box&quot;><div class=&quot;stat-num&quot; style=&quot;color:var(--gold)&quot; id=&quot;statFollow&quot;>0</div><div class=&quot;stat-label&quot;>Follow-Up</div></div>
+  </div>
+  <div class=&quot;status-legend&quot;>
+    <div class=&quot;legend-item&quot;><div class=&quot;legend-dot&quot; style=&quot;background:var(--mid)&quot;></div>Not Knocked</div>
+    <div class=&quot;legend-item&quot;><div class=&quot;legend-dot&quot; style=&quot;background:var(--gold)&quot;></div>Knocked</div>
+    <div class=&quot;legend-item&quot;><div class=&quot;legend-dot&quot; style=&quot;background:var(--teal)&quot;></div>Conversation</div>
+    <div class=&quot;legend-item&quot;><div class=&quot;legend-dot&quot; style=&quot;background:var(--blue)&quot;></div>Walkthrough</div>
+    <div class=&quot;legend-item&quot;><div class=&quot;legend-dot&quot; style=&quot;background:var(--green)&quot;></div>Closed</div>
+    <div class=&quot;legend-item&quot;><div class=&quot;legend-dot&quot; style=&quot;background:var(--purple)&quot;></div>Handoff</div>
+  </div>
+  <div class=&quot;clover-grid&quot; id=&quot;cloverGrid&quot;></div>
+</div>
+
+<!-- PANEL: SCRIPTS -->
+<div class=&quot;panel&quot; id=&quot;panel-scripts&quot;>
+  <h2>Door Scripts</h2>
+  <p class=&quot;subtitle&quot;>Tap to copy. Education first, always.</p>
+
+  <h3>🚪 Primary — Neighbor Notification</h3>
+  <div class=&quot;script-card&quot; onclick=&quot;copyText(this)&quot;>
+    <div class=&quot;script-label&quot;>The Opener</div>
+    <div class=&quot;script-text&quot;>&quot;Hi, I'm [Name] with A3 Smart Security. We're installing a protection system at your neighbor's right now. Wanted to give you a heads up in case you hear drilling. While I'm here — do you have any security set up, or has it been on your radar?&quot;</div>
+    <div class=&quot;script-note&quot;>📋 Tap to copy</div>
+  </div>
+
+  <h3>🔗 Education Bridge</h3>
+  <div class=&quot;script-card teal&quot; onclick=&quot;copyText(this)&quot;>
+    <div class=&quot;script-label&quot;>Transition to Interest</div>
+    <div class=&quot;script-text&quot;>&quot;Are you familiar with what's been happening security-wise in the neighborhood? A lot of homeowners are upgrading right now. Your neighbor [Member] actually just went with a full system.&quot;</div>
+  </div>
+
+  <h3>🏠 Walkthrough Invite</h3>
+  <div class=&quot;script-card green&quot; onclick=&quot;copyText(this)&quot;>
+    <div class=&quot;script-label&quot;>Get Inside</div>
+    <div class=&quot;script-text&quot;>&quot;I'd be happy to do a quick walkthrough — takes about 15 minutes. I'll show you exactly what I'd recommend for your home. No cost, no obligation. Can I step in?&quot;</div>
+  </div>
+
+  <h3>🤝 Referral Bridge</h3>
+  <div class=&quot;script-card gold&quot; onclick=&quot;copyText(this)&quot;>
+    <div class=&quot;script-label&quot;>When Member Refers</div>
+    <div class=&quot;script-text&quot;>&quot;Your neighbor [Member] just had their system installed and mentioned you might be interested. They're really happy with it — would you want to see what we set up for them?&quot;</div>
+  </div>
+
+  <h3>🔄 Return Visit</h3>
+  <div class=&quot;script-card blue&quot; onclick=&quot;copyText(this)&quot;>
+    <div class=&quot;script-label&quot;>Day 2+ Follow-Up</div>
+    <div class=&quot;script-text&quot;>&quot;Hey [Name], I came by yesterday when we were installing at your neighbor's. Just wanted to follow up — any questions come up? I've got 15 minutes if you want that walkthrough.&quot;</div>
+  </div>
+
+  <h3>😊 Hesitant Homeowner</h3>
+  <div class=&quot;script-card purple&quot; onclick=&quot;copyText(this)&quot;>
+    <div class=&quot;script-label&quot;>Exterior Only Offer</div>
+    <div class=&quot;script-text&quot;>&quot;Totally understand. How about I just take a quick look at the outside — your entry points, windows, the garage. 5 minutes. If it makes sense, we go from there.&quot;</div>
+  </div>
+
+  <h3>❌ Graceful Exit</h3>
+  <div class=&quot;script-card&quot; onclick=&quot;copyText(this)&quot; style=&quot;border-left-color:var(--mid)&quot;>
+    <div class=&quot;script-label&quot;>Leave the Card</div>
+    <div class=&quot;script-text&quot;>&quot;No problem at all. Here's my card. If anything comes up — break-in in the neighborhood, a package stolen, anything — give me a call. I'm usually working this area.&quot;</div>
+    <div class=&quot;script-note&quot;>Never leave empty-handed. Get name + best time to return.</div>
+  </div>
+
+  <h3 style=&quot;color:var(--red)&quot;>🔥 Quick Objections at the Door</h3>
+  <div class=&quot;script-card&quot; style=&quot;border-left-color:var(--red)&quot;>
+    <div class=&quot;script-text&quot; style=&quot;font-style:normal;font-size:.85rem&quot;>
+      <strong style=&quot;color:var(--red)&quot;>&quot;Not interested.&quot;</strong> → &quot;Totally get it — just neighbor notification. Card in case.&quot;<br><br>
+      <strong style=&quot;color:var(--red)&quot;>&quot;We're safe here.&quot;</strong> → &quot;Quiet neighborhoods targeted MORE. Your neighbor just upgraded for that reason.&quot;<br><br>
+      <strong style=&quot;color:var(--red)&quot;>&quot;Have Ring/Nest.&quot;</strong> → &quot;Great — how's coverage in back and garage? Those are the gaps I always find.&quot;<br><br>
+      <strong style=&quot;color:var(--red)&quot;>&quot;Not a good time.&quot;</strong> → &quot;I'm in the area today — what time works? I can come back.&quot;<br><br>
+      <strong style=&quot;color:var(--red)&quot;>&quot;Send me info.&quot;</strong> → &quot;A brochure won't show you what I'd actually recommend for YOUR home. 15 min?&quot;
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: MANAGER HANDOFF -->
+<div class=&quot;panel&quot; id=&quot;panel-handoff&quot;>
+  <h2>Manager Handoff</h2>
+  <p class=&quot;subtitle&quot;>When to call. How to position it. The tag-team close.</p>
+
+  <h3>📞 When to Call</h3>
+  <div class=&quot;script-card&quot; style=&quot;border-left-color:var(--red)&quot;>
+    <div class=&quot;script-text&quot; style=&quot;font-style:normal;font-size:.85rem;color:var(--lt)&quot;>
+      ✦ Objections you can't overcome<br>
+      ✦ Price sticking point — maxed your authority<br>
+      ✦ &quot;Think about it&quot; — warm but not closing<br>
+      ✦ Spouse/partner needs a fresh voice<br>
+      ✦ Large/complex home needs custom design
+    </div>
+  </div>
+
+  <h3>🗣️ To the Homeowner</h3>
+  <div class=&quot;script-card gold&quot; onclick=&quot;copyText(this)&quot;>
+    <div class=&quot;script-label&quot;>Position the Manager</div>
+    <div class=&quot;script-text&quot;>&quot;You know what — let me bring my senior advisor over. They can walk through the final details and make sure we get you the absolute best value. They're right in the neighborhood.&quot;</div>
+  </div>
+
+  <h3>📱 To the Manager (Phone — Step Away)</h3>
+  <div class=&quot;script-card teal&quot; onclick=&quot;copyText(this)&quot;>
+    <div class=&quot;script-label&quot;>The Intel Brief</div>
+    <div class=&quot;script-text&quot;>&quot;I'm at [address]. Walked the whole home. [Family size]. Key triggers: [kids/garage/slider/3AM]. They're warm on [Better/Best] but stuck on [objection]. I need you to close.&quot;</div>
+  </div>
+
+  <h3>🤝 When Manager Arrives</h3>
+  <div class=&quot;script-card green&quot; onclick=&quot;copyText(this)&quot;>
+    <div class=&quot;script-label&quot;>The Introduction</div>
+    <div class=&quot;script-text&quot;>&quot;[Homeowner], this is [Manager] — they're the one who designs the systems for this area. I told them everything we talked about.&quot;</div>
+  </div>
+
+  <div class=&quot;script-card&quot; style=&quot;border-left-color:var(--red);background:rgba(204,34,41,.08)&quot;>
+    <div class=&quot;script-label&quot; style=&quot;color:var(--red)&quot;>⚠️ CRITICAL RULES</div>
+    <div class=&quot;script-text&quot; style=&quot;font-style:normal;color:var(--lt)&quot;>
+      <strong>YOU stay in the home.</strong> Don't leave. You = rapport. Manager = authority.<br><br>
+      <strong>Don't undermine yourself.</strong> Never say &quot;I couldn't close this.&quot; Say &quot;I want to make sure they get the best value.&quot;<br><br>
+      <strong>Stay engaged.</strong> Nod, confirm what you observed, back up the manager's recommendations.<br><br>
+      <strong>Let the manager lead.</strong> They'll re-walk key rooms if needed. Support, don't redirect.
+    </div>
+  </div>
+
+  <h3>💰 Kitchen Table Close — Quick Reference</h3>
+  <div class=&quot;script-card gold&quot;>
+    <div class=&quot;script-label&quot;>The Callback Framework</div>
+    <div class=&quot;script-text&quot;>&quot;We walked through the whole house. You told me [CONCERN 1], you mentioned [CONCERN 2], and I noticed [OBSERVATION]. Here's exactly what I'd put in this home if it were mine.&quot;</div>
+    <div class=&quot;script-note&quot; style=&quot;margin-top:.8rem;font-style:normal&quot;>
+      <strong style=&quot;color:var(--gold)&quot;>BEST first</strong> → Full system from walkthrough. &quot;This is peace of mind.&quot;<br>
+      <strong style=&quot;color:var(--lt)&quot;>BETTER if they step</strong> → Core + 2 cameras + smart lock. &quot;Covers everything critical.&quot;<br>
+      <strong style=&quot;color:var(--mid)&quot;>GOOD floor</strong> → Entry sensors + panel + monitoring. &quot;Start here and grow.&quot;<br><br>
+      <strong style=&quot;color:var(--red)&quot;>After price: STOP TALKING. First person to speak loses.</strong>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: EXPORT -->
+<div class=&quot;panel&quot; id=&quot;panel-export&quot;>
+  <h2>Export &amp; Reset</h2>
+  <p class=&quot;subtitle&quot;>Email your results, save for CRM, or reset for the next install.</p>
+  <div style=&quot;display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem&quot;>
+    <button class=&quot;btn btn-gold&quot; onclick=&quot;generateExport()&quot;>📋 Generate Summary</button>
+    <button class=&quot;btn btn-teal&quot; onclick=&quot;emailExport()&quot;>📧 Email Summary</button>
+    <button class=&quot;btn btn-outline&quot; onclick=&quot;copyExport()&quot;>📄 Copy to Clipboard</button>
+    <button class=&quot;btn btn-red&quot; onclick=&quot;resetAll()&quot;>↺ Reset for Next Install</button>
+  </div>
+  <div class=&quot;export-preview&quot; id=&quot;exportPreview&quot;>Click &quot;Generate Summary&quot; to preview your install report.</div>
+</div>
+
+<!-- DOOR MODAL -->
+<div class=&quot;modal-overlay&quot; id=&quot;doorModal&quot;>
+  <div class=&quot;modal&quot;>
+    <h3 id=&quot;modalTitle&quot;>Door Details</h3>
+    <label>Homeowner Name</label>
+    <input type=&quot;text&quot; id=&quot;doorName&quot; placeholder=&quot;Name&quot;>
+    <label>Address / House #</label>
+    <input type=&quot;text&quot; id=&quot;doorAddr&quot; placeholder=&quot;Address or description&quot;>
+    <label>Status</label>
+    <select id=&quot;doorStatus&quot;>
+      <option value=&quot;none&quot;>Not Knocked</option>
+      <option value=&quot;knocked&quot;>Knocked — No Answer</option>
+      <option value=&quot;conversation&quot;>Conversation Started</option>
+      <option value=&quot;walkthrough&quot;>Walkthrough Completed</option>
+      <option value=&quot;closed&quot;>CLOSED ✅</option>
+      <option value=&quot;handoff&quot;>Manager Handoff</option>
+      <option value=&quot;followup&quot;>Follow-Up Scheduled</option>
+    </select>
+    <label>Notes</label>
+    <textarea id=&quot;doorNotes&quot; placeholder=&quot;Key triggers, objections, family info, follow-up time...&quot;></textarea>
+    <label>Follow-Up Date/Time</label>
+    <input type=&quot;text&quot; id=&quot;doorFollowup&quot; placeholder=&quot;e.g., Thursday 2pm&quot;>
+    <div class=&quot;btn-row&quot;>
+      <button class=&quot;btn btn-gold&quot; onclick=&quot;saveDoor()&quot;>💾 Save</button>
+      <button class=&quot;btn btn-outline&quot; onclick=&quot;closeDoorModal()&quot;>Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// === DATA ===
+let installData = { addr:'', date:'', rep:'', tech:'', member:'', doors:[] };
+let currentDoor = null;
+
+// === GATE ===
+function checkGate(){
+  const p=document.getElementById('gatePass').value.toLowerCase().trim();
+  if(p==='ssu2026'||p==='cloverleaf'){
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('mainNav').style.display='flex';
+    loadFromStorage();
+  } else {
+    document.getElementById('gateErr').style.display='block';
+    document.getElementById('gatePass').value='';
+  }
+}
+document.getElementById('gatePass').addEventListener('keypress',e=>{if(e.key==='Enter')checkGate()});
+
+// === NAV ===
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if(id==='clover') renderGrid();
+  if(id==='export') generateExport();
+}
+
+// === CLOVERLEAF SETUP ===
+function initDoors(){
+  const doors = [];
+  // Right side: R1-R4 + RC (corner)
+  for(let i=1;i<=4;i++) doors.push({id:'R'+i,label:'Right #'+i,zone:'right',status:'none',name:'',addr:'',notes:'',followup:''});
+  doors.push({id:'RC',label:'Right Corner',zone:'right-corner',status:'none',name:'',addr:'',notes:'',followup:''});
+  // Left side: L1-L4 + LC (corner)
+  for(let i=1;i<=4;i++) doors.push({id:'L'+i,label:'Left #'+i,zone:'left',status:'none',name:'',addr:'',notes:'',followup:''});
+  doors.push({id:'LC',label:'Left Corner',zone:'left-corner',status:'none',name:'',addr:'',notes:'',followup:''});
+  // Across: A1-A8
+  for(let i=1;i<=8;i++) doors.push({id:'A'+i,label:'Across #'+i,zone:'across',status:'none',name:'',addr:'',notes:'',followup:''});
+  return doors;
+}
+
+function startCloverleaf(){
+  installData.addr = document.getElementById('installAddr').value;
+  installData.date = document.getElementById('installDate').value;
+  installData.rep = document.getElementById('repName').value;
+  installData.tech = document.getElementById('techName').value;
+  installData.member = document.getElementById('memberName').value;
+  if(!installData.doors.length) installData.doors = initDoors();
+  saveToStorage();
+  showPanelDirect('clover');
+}
+
+function showPanelDirect(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b=>{b.classList.remove('active');if(b.textContent.includes(id==='clover'?'Doors':id==='scripts'?'Scripts':id==='handoff'?'Handoff':id==='export'?'Export':'Setup'))b.classList.add('active')});
+  if(id==='clover') renderGrid();
+}
+
+// === GRID RENDER ===
+function renderGrid(){
+  const g = document.getElementById('cloverGrid');
+  if(!installData.doors.length){g.innerHTML='<div style=&quot;grid-column:1/-1;text-align:center;color:var(--mid);padding:2rem&quot;>Set up an install first to see your cloverleaf pattern.</div>';return}
+  const across = installData.doors.filter(d=>d.zone==='across');
+  const left = installData.doors.filter(d=>d.zone==='left'||d.zone==='left-corner');
+  const right = installData.doors.filter(d=>d.zone==='right'||d.zone==='right-corner');
+  let html = '';
+  // Across row
+  html += across.map(d=>`<div class=&quot;door-card ${d.status!=='none'?'':''.trim()}&quot; data-status=&quot;${d.status}&quot; onclick=&quot;openDoor('${d.id}')&quot;><div class=&quot;door-num&quot;>${d.id}</div>${statusIcon(d.status)}<div style=&quot;font-size:.6rem;color:var(--mid)&quot;>${d.name||'—'}</div></div>`).join('');
+  // Street divider
+  html += '<div class=&quot;street&quot;>━━━ STREET ━━━</div>';
+  // Left side
+  html += left.map(d=>`<div class=&quot;door-card&quot; data-status=&quot;${d.status}&quot; onclick=&quot;openDoor('${d.id}')&quot;><div class=&quot;door-num&quot;>${d.id}</div>${statusIcon(d.status)}<div style=&quot;font-size:.6rem;color:var(--mid)&quot;>${d.name||'—'}</div></div>`).join('');
+  // Install house
+  html += `<div class=&quot;door-card install&quot; style=&quot;grid-column:span 2&quot;><div class=&quot;door-num&quot; style=&quot;font-size:.8rem&quot;>🔴 INSTALL</div><div style=&quot;font-size:.7rem;color:var(--lt)&quot;>${installData.addr||'—'}</div></div>`;
+  // Right side  
+  html += right.map(d=>`<div class=&quot;door-card&quot; data-status=&quot;${d.status}&quot; onclick=&quot;openDoor('${d.id}')&quot;><div class=&quot;door-num&quot;>${d.id}</div>${statusIcon(d.status)}<div style=&quot;font-size:.6rem;color:var(--mid)&quot;>${d.name||'—'}</div></div>`).join('');
+  g.innerHTML = html;
+  document.getElementById('cloverSubtitle').textContent = installData.addr ? `Install: ${installData.addr}` : 'Map your doors and track every interaction.';
+  updateStats();
+}
+
+function statusIcon(s){
+  const map = {none:'⬜',knocked:'🟡',conversation:'🟢',walkthrough:'🔵',closed:'✅',handoff:'🟣',followup:'📅'};
+  return `<div style=&quot;font-size:.8rem&quot;>${map[s]||'⬜'}</div>`;
+}
+
+function updateStats(){
+  const d = installData.doors;
+  document.getElementById('statKnocked').textContent = d.filter(x=>x.status!=='none').length;
+  document.getElementById('statConvo').textContent = d.filter(x=>['conversation','walkthrough','closed','handoff','followup'].includes(x.status)).length;
+  document.getElementById('statWalk').textContent = d.filter(x=>['walkthrough','closed','handoff'].includes(x.status)).length;
+  document.getElementById('statClosed').textContent = d.filter(x=>x.status==='closed').length;
+  document.getElementById('statHandoff').textContent = d.filter(x=>x.status==='handoff').length;
+  document.getElementById('statFollow').textContent = d.filter(x=>x.status==='followup').length;
+}
+
+// === DOOR MODAL ===
+function openDoor(id){
+  currentDoor = installData.doors.find(d=>d.id===id);
+  if(!currentDoor) return;
+  document.getElementById('modalTitle').textContent = currentDoor.label+' — '+currentDoor.id;
+  document.getElementById('doorName').value = currentDoor.name||'';
+  document.getElementById('doorAddr').value = currentDoor.addr||'';
+  document.getElementById('doorStatus').value = currentDoor.status||'none';
+  document.getElementById('doorNotes').value = currentDoor.notes||'';
+  document.getElementById('doorFollowup').value = currentDoor.followup||'';
+  document.getElementById('doorModal').classList.add('show');
+}
+function closeDoorModal(){document.getElementById('doorModal').classList.remove('show');currentDoor=null}
+function saveDoor(){
+  if(!currentDoor) return;
+  currentDoor.name = document.getElementById('doorName').value;
+  currentDoor.addr = document.getElementById('doorAddr').value;
+  currentDoor.status = document.getElementById('doorStatus').value;
+  currentDoor.notes = document.getElementById('doorNotes').value;
+  currentDoor.followup = document.getElementById('doorFollowup').value;
+  saveToStorage();
+  closeDoorModal();
+  renderGrid();
+}
+
+// === EXPORT ===
+function generateExport(){
+  const d = installData;
+  let txt = `═══════════════════════════════════════\n`;
+  txt += `  SSU CLOVERLEAF — INSTALL REPORT\n`;
+  txt += `═══════════════════════════════════════\n\n`;
+  txt += `Install Address: ${d.addr||'N/A'}\n`;
+  txt += `Date: ${d.date||'N/A'}\n`;
+  txt += `Rep: ${d.rep||'N/A'}\n`;
+  txt += `Tech: ${d.tech||'N/A'}\n`;
+  txt += `Install Member: ${d.member||'N/A'}\n\n`;
+  txt += `── STATS ──\n`;
+  const doors = d.doors;
+  txt += `Doors Knocked: ${doors.filter(x=>x.status!=='none').length} / ${doors.length}\n`;
+  txt += `Conversations: ${doors.filter(x=>['conversation','walkthrough','closed','handoff','followup'].includes(x.status)).length}\n`;
+  txt += `Walkthroughs: ${doors.filter(x=>['walkthrough','closed','handoff'].includes(x.status)).length}\n`;
+  txt += `Closed: ${doors.filter(x=>x.status==='closed').length}\n`;
+  txt += `Manager Handoffs: ${doors.filter(x=>x.status==='handoff').length}\n`;
+  txt += `Follow-Ups Scheduled: ${doors.filter(x=>x.status==='followup').length}\n\n`;
+  txt += `── DOOR DETAILS ──\n`;
+  doors.filter(x=>x.status!=='none').forEach(x=>{
+    txt += `\n${x.id} — ${x.label}\n`;
+    txt += `  Name: ${x.name||'—'}\n`;
+    txt += `  Address: ${x.addr||'—'}\n`;
+    txt += `  Status: ${x.status.toUpperCase()}\n`;
+    if(x.notes) txt += `  Notes: ${x.notes}\n`;
+    if(x.followup) txt += `  Follow-Up: ${x.followup}\n`;
+  });
+  txt += `\n═══════════════════════════════════════\n`;
+  txt += `Members First | G$D | True North\n`;
+  txt += `SSU Cloverleaf v1.0 | Generated ${new Date().toLocaleString()}\n`;
+  document.getElementById('exportPreview').textContent = txt;
+  return txt;
+}
+
+function emailExport(){
+  const txt = generateExport();
+  const subject = encodeURIComponent(`Cloverleaf Report — ${installData.addr||'Install'} — ${installData.date||'Today'}`);
+  const body = encodeURIComponent(txt);
+  window.open(`mailto:?subject=${subject}&amp;body=${body}`);
+}
+
+function copyExport(){
+  const txt = document.getElementById('exportPreview').textContent;
+  navigator.clipboard.writeText(txt).then(()=>alert('Copied to clipboard!')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Copied!');
+  });
+}
+
+function copyText(el){
+  const t = el.querySelector('.script-text').textContent;
+  navigator.clipboard.writeText(t).then(()=>{
+    const orig = el.style.borderLeftColor;
+    el.style.borderLeftColor='var(--green)';
+    setTimeout(()=>el.style.borderLeftColor=orig,600);
+  }).catch(()=>{});
+}
+
+// === STORAGE ===
+function saveToStorage(){try{localStorage.setItem('ssu_cloverleaf',JSON.stringify(installData))}catch(e){}}
+function loadFromStorage(){
+  try{
+    const s=localStorage.getItem('ssu_cloverleaf');
+    if(s){
+      installData=JSON.parse(s);
+      document.getElementById('installAddr').value=installData.addr||'';
+      document.getElementById('installDate').value=installData.date||'';
+      document.getElementById('repName').value=installData.rep||'';
+      document.getElementById('techName').value=installData.tech||'';
+      document.getElementById('memberName').value=installData.member||'';
+    }
+  }catch(e){}
+}
+function loadSaved(){
+  loadFromStorage();
+  if(installData.doors.length){showPanelDirect('clover')}
+  else{alert('No saved install found. Start a new one.')}
+}
+function resetAll(){
+  if(!confirm('Reset everything for the next install? This clears all door data.')) return;
+  installData={addr:'',date:'',rep:'',tech:'',member:'',doors:[]};
+  localStorage.removeItem('ssu_cloverleaf');
+  document.getElementById('installAddr').value='';
+  document.getElementById('installDate').value='';
+  document.getElementById('techName').value='';
+  document.getElementById('memberName').value='';
+  showPanelDirect('setup');
+}
+
+// === INIT ===
+document.getElementById('installDate').value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
+"></iframe>
+</div>
+<div class="tool-frame" id="frame-wt">
+  <div class="frame-bar"><button class="back" onclick="goHub()">← Hub</button><div class="fl">danddee</div><div class="fs">Walkthrough Tracker</div></div>
+  <iframe id="if-wt" srcdoc="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+<meta charset=&quot;UTF-8&quot;>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;>
+<meta name=&quot;theme-color&quot; content=&quot;#080b12&quot;>
+<meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot;>
+<title>SSU Walkthrough | Field Tracker</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;family=Playfair+Display:wght@700;900&amp;display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080b12;--card:#0e1420;--card2:#141c2b;--border:rgba(255,255,255,.08);--navy:#1A2744;--red:#CC2229;--gold:#D4A843;--teal:#0D9488;--green:#16A34A;--blue:#2563EB;--purple:#7C3AED;--white:#fff;--lt:#CBD5E1;--mid:#64748B;--radius:10px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--white);min-height:100vh}
+/* GATE */
+#gate{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;z-index:999}
+#gate.hidden{display:none}
+.g-logo{font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--gold);font-weight:900}
+.g-sub{color:var(--teal);font-size:.75rem;letter-spacing:4px;text-transform:uppercase}
+.g-in{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:.65rem 1rem;color:var(--white);font-size:.95rem;width:240px;text-align:center;outline:none}
+.g-in:focus{border-color:var(--gold)}
+.g-btn{background:var(--red);color:white;border:none;padding:.6rem 1.8rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem}
+.g-err{color:var(--red);font-size:.75rem;display:none}
+/* HEADER */
+header{background:var(--card);border-bottom:1px solid var(--border);padding:.5rem .8rem;position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:.5rem}
+header .logo{font-family:'Playfair Display',serif;color:var(--gold);font-size:1rem;font-weight:700}
+header .member-tag{margin-left:auto;font-size:.7rem;color:var(--teal);background:rgba(13,148,136,.1);padding:.2rem .5rem;border-radius:4px;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* MEMBER BAR */
+.member-bar{background:var(--card);border-bottom:1px solid var(--border);padding:.5rem .8rem}
+.member-bar input{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;color:var(--white);font-size:.8rem;width:100%;outline:none;font-family:'DM Sans',sans-serif;margin-bottom:.3rem}
+.member-bar input:focus{border-color:var(--gold)}
+.member-bar .row{display:grid;grid-template-columns:1fr 1fr;gap:.3rem}
+.member-bar .actions{display:flex;gap:.3rem;margin-top:.3rem}
+.btn-s{padding:.3rem .6rem;border-radius:5px;border:none;font-size:.7rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-gold{background:var(--gold);color:var(--bg)}.btn-red{background:var(--red);color:white}
+.btn-teal{background:var(--teal);color:white}.btn-out{background:transparent;border:1px solid var(--mid);color:var(--lt)}
+/* PROGRESS */
+.progress-bar{background:var(--card);padding:.3rem .8rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
+.progress-track{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:3px;transition:.3s}
+.progress-text{font-size:.7rem;color:var(--mid);white-space:nowrap}
+/* STOP NAV */
+.stop-nav{display:flex;overflow-x:auto;gap:.3rem;padding:.4rem .8rem;background:var(--card);border-bottom:1px solid var(--border)}
+.stop-nav::-webkit-scrollbar{display:none}
+.stop-btn{flex-shrink:0;padding:.3rem .6rem;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--lt);font-size:.65rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;position:relative}
+.stop-btn:hover,.stop-btn.active{background:var(--gold);color:var(--bg);border-color:var(--gold);font-weight:700}
+.stop-btn .check{position:absolute;top:-3px;right:-3px;width:12px;height:12px;background:var(--green);border-radius:50%;font-size:7px;display:none;align-items:center;justify-content:center;color:white}
+.stop-btn.done .check{display:flex}
+/* STOP CONTENT */
+.stop-panel{display:none;padding:.8rem;max-width:700px;margin:0 auto}
+.stop-panel.active{display:block}
+.stop-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);margin-bottom:.2rem}
+.stop-goal{color:var(--mid);font-size:.8rem;margin-bottom:.8rem;font-style:italic}
+/* SECTION TABS */
+.sec-tabs{display:flex;gap:.3rem;margin-bottom:.6rem}
+.sec-tab{padding:.3rem .6rem;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--lt);font-size:.7rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+.sec-tab.active{background:var(--teal);color:white;border-color:var(--teal)}
+/* CHECKLIST */
+.check-item{display:flex;align-items:flex-start;gap:.5rem;padding:.5rem;background:var(--card);border:1px solid var(--border);border-radius:6px;margin-bottom:.3rem;cursor:pointer;transition:.15s}
+.check-item:hover{border-color:var(--gold)}
+.check-item.checked{border-color:var(--green);background:rgba(22,163,74,.06)}
+.check-item.checked .check-box{background:var(--green);border-color:var(--green)}
+.check-item.checked .check-box::after{content:'✓';color:white;font-size:.6rem}
+.check-box{width:18px;height:18px;border:2px solid var(--mid);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.check-text{font-size:.8rem;color:var(--lt);line-height:1.4}
+.check-text strong{color:var(--gold)}
+.check-text em{color:var(--teal);font-style:normal;font-size:.75rem}
+/* CRUMB CARDS */
+.crumb{background:var(--card2);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:.5rem .7rem;margin-bottom:.4rem;cursor:pointer;transition:.15s}
+.crumb:hover{border-left-color:var(--green)}
+.crumb.dropped{border-left-color:var(--green);background:rgba(22,163,74,.06)}
+.crumb.dropped::before{content:'🌱 '}
+.crumb-text{font-size:.8rem;color:var(--lt);font-style:italic}
+.crumb-note{font-size:.7rem;color:var(--mid);margin-top:.2rem}
+/* GBB */
+.gbb-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.5rem 0}
+.gbb-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.5rem;cursor:pointer;transition:.2s;text-align:center}
+.gbb-card:hover{border-color:var(--gold)}
+.gbb-card.selected{border-color:var(--green);background:rgba(22,163,74,.08)}
+.gbb-label{font-size:.7rem;font-weight:700;margin-bottom:.2rem}
+.gbb-items{font-size:.65rem;color:var(--lt);line-height:1.4}
+.gbb-card:first-child .gbb-label{color:var(--gold)}
+.gbb-card:nth-child(2) .gbb-label{color:var(--lt)}
+.gbb-card:last-child .gbb-label{color:var(--mid)}
+/* NOTES FIELD */
+.room-notes{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:.5rem;color:var(--white);font-size:.8rem;font-family:'DM Sans',sans-serif;min-height:50px;resize:vertical;outline:none;margin-top:.5rem}
+.room-notes:focus{border-color:var(--gold)}
+/* MARK COMPLETE */
+.complete-btn{width:100%;padding:.6rem;border-radius:8px;border:2px solid var(--green);background:transparent;color:var(--green);font-weight:700;font-size:.85rem;cursor:pointer;margin-top:.8rem;font-family:'DM Sans',sans-serif;transition:.2s}
+.complete-btn:hover,.complete-btn.done{background:var(--green);color:white}
+/* FOOTER */
+.app-foot{text-align:center;padding:1.5rem .8rem;color:var(--mid);font-size:.65rem}
+@media(max-width:400px){.gbb-row{grid-template-columns:1fr}.member-bar .row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- GATE -->
+<div id=&quot;gate&quot;>
+  <div class=&quot;g-logo&quot;>SSU</div>
+  <div class=&quot;g-sub&quot;>Walkthrough Field Tracker</div>
+  <input type=&quot;password&quot; class=&quot;g-in&quot; id=&quot;gp&quot; placeholder=&quot;Access Password&quot; autocomplete=&quot;off&quot;>
+  <button class=&quot;g-btn&quot; onclick=&quot;gateCheck()&quot;>🔒 ENTER</button>
+  <div class=&quot;g-err&quot; id=&quot;ge&quot;>⚠ Incorrect password.</div>
+  <div style=&quot;position:absolute;bottom:1rem;color:var(--mid);font-size:.65rem;text-align:center&quot;>Members First · G$D · True North<br>A3 Smart Security · Field Tracker v3.1</div>
+</div>
+
+<!-- APP -->
+<div id=&quot;app&quot; style=&quot;display:none&quot;>
+  <header>
+    <div class=&quot;logo&quot;>🏠 SSU Walkthrough</div>
+    <div class=&quot;member-tag&quot; id=&quot;memberTag&quot;>No member set</div>
+  </header>
+
+  <div class=&quot;member-bar&quot; id=&quot;memberBar&quot;>
+    <input type=&quot;text&quot; id=&quot;mName&quot; placeholder=&quot;👤 Member Name&quot; oninput=&quot;saveMember()&quot;>
+    <div class=&quot;row&quot;>
+      <input type=&quot;text&quot; id=&quot;mAddr&quot; placeholder=&quot;📍 Address&quot; oninput=&quot;saveMember()&quot;>
+      <input type=&quot;date&quot; id=&quot;mDate&quot; oninput=&quot;saveMember()&quot;>
+    </div>
+    <div class=&quot;actions&quot;>
+      <button class=&quot;btn-s btn-gold&quot; onclick=&quot;toggleMemberBar()&quot;>▲ Collapse</button>
+      <button class=&quot;btn-s btn-teal&quot; onclick=&quot;emailReport()&quot;>📧 Email</button>
+      <button class=&quot;btn-s btn-out&quot; onclick=&quot;copyReport()&quot;>📋 Copy</button>
+      <button class=&quot;btn-s btn-red&quot; onclick=&quot;resetWalkthrough()&quot;>↺ Reset</button>
+    </div>
+  </div>
+
+  <div class=&quot;progress-bar&quot;>
+    <div class=&quot;progress-track&quot;><div class=&quot;progress-fill&quot; id=&quot;progFill&quot; style=&quot;width:0%&quot;></div></div>
+    <div class=&quot;progress-text&quot; id=&quot;progText&quot;>0 / 13 complete</div>
+  </div>
+
+  <div class=&quot;stop-nav&quot; id=&quot;stopNav&quot;></div>
+
+  <div id=&quot;stopsContainer&quot;></div>
+
+  <div class=&quot;app-foot&quot;>Members First · G$D · True North<br>ssu-walkthrough.com · v3.1 · © 2026</div>
+</div>
+
+<script>
+// === WALKTHROUGH DATA (13 stops from ssu-walkthrough.com) ===
+const STOPS = [
+  {id:0,icon:'🚗',name:'Arrival &amp; Driveway',goal:'Build first mental map. Identify exposures before they tell you.',
+    look:['Corner lot? Double perimeter exposure','Street visibility — well-lit or shadowed?','Dense landscaping blocking sightlines','Existing camera, alarm sticker, panel box?','Dog toys, basketball hoop → kids → protection emotion','Nice car → asset protection mindset','Amazon boxes left out → delivery theft risk'],
+    ask:[{q:'How long have you been in the neighborhood?',intel:'Long = invested. New = learning risk profile.'},
+      {q:'Noticed anything recently that made you think twice?',intel:'Opens incident stories or personal fear.'},
+      {q:'I noticed [camera/no signage] — happy with current coverage?',intel:'Shows you\'re already assessing their property.'}],
+    crumbs:[{text:'&quot;From out here I can already count a few spots where you\'d want coverage.&quot;',note:'Sets expert frame.'},
+      {text:'&quot;You know what burglars look for first? Easy access with low visibility.&quot;',note:'Security lens activated.'}],
+    gbb:{best:'4-camera outdoor HD, smart garage, package detection, perimeter motion',better:'Doorbell + 1 outdoor cam + driveway sensor + motion lighting',good:'Video doorbell + front door contact sensor'}},
+  {id:1,icon:'🚪',name:'Front Door &amp; Entry',goal:'#1 entry point for 34% of break-ins. Connect to who walks through this door.',
+    look:['Deadbolt type — single or double cylinder?','Strike plate — builder grade or reinforced?','Smart lock or traditional key?','Kids\' backpacks → latchkey situation','Multiple deadbolts → already nervous','Existing doorbell camera (Ring? Dead?)'],
+    ask:[{q:'When you leave, do you always remember to lock both locks?',intel:'Opens smart lock automation.'},
+      {q:'Who else has a key — kids, cleaner, dog walker?',intel:'Smart lock / access code need.'},
+      {q:'Do your kids get home before you? What do they do?',intel:'GOLD. Doorbell + smart lock = peace of mind.'}],
+    crumbs:[{text:'&quot;This strike plate — one kick and most doors open. We can fix that.&quot;',note:'Vulnerability awareness.'},
+      {text:'&quot;Imagine getting a notification the second your kid walks through this door.&quot;',note:'Parental love trigger.'},
+      {text:'&quot;That anxiety of \'did I lock the door?\' — it just goes away.&quot;',note:'Social proof + daily relief.'}],
+    gbb:{best:'Smart deadbolt + doorbell + motion + two-way audio + child arrival rule',better:'Doorbell + smart lock + unique user codes + auto-lock',good:'Video doorbell + door contact sensor + alerts'}},
+  {id:2,icon:'🛋️',name:'Living Room',goal:'Understand what they value. The slider is almost always unsensed.',
+    look:['Sliding glass door to patio — usually unsensed!','Large windows — accessible from ground?','High-value electronics, gaming, collectibles','Smart TV, Alexa, Google Home?','Family photos → ages of kids? Pets?'],
+    ask:[{q:'Do you use that back door a lot, or mainly the front?',intel:'Surfaces the #2 entry point gap.'},
+      {q:'Already into smart home stuff, or just one thing?',intel:'Gauges tech appetite for integration.'},
+      {q:'Home most evenings, or always on the go?',intel:'More away = more cameras + remote alerts.'}],
+    crumbs:[{text:'&quot;That sliding door is the #2 entry point. 9 out of 10 homes — nothing on it.&quot;',note:'&quot;Add to the list&quot; — building their custom solution.'},
+      {text:'&quot;Alarm.com talks to your Alexa. Walk in, say \'I\'m home,\' it disarms.&quot;',note:'Smart home wow factor.'},
+      {text:'&quot;Monitoring is under $1/day. When I show you, it\'s a no-brainer.&quot;',note:'Pre-handles price objection.'}],
+    gbb:{best:'Full interior cameras + pet-immune motion + smart home scenes + automation',better:'Indoor cam + glass break + smart lighting',good:'Window/door sensors (3-4) + motion + slider sensor'}},
+  {id:3,icon:'🍽️',name:'Kitchen &amp; Dining',goal:'Expand beyond burglary. Life safety closes here — CO, fire, water.',
+    look:['Smoke detector — builder grade? Expiration?','Gas stove = CO detector needed!','Dishwasher / fridge water line condition','Kitchen door to garage — locked or open?'],
+    ask:[{q:'When\'s the last time you tested that smoke detector?',intel:'Most don\'t know. Opens monitored life safety.'},
+      {q:'Gas range — do you have CO detectors? CO is odorless.',intel:'CO is the #1 life safety close.'},
+      {q:'Ever had a water issue — dishwasher leak, anything?',intel:'Water sensor close. &quot;Prevent your first one.&quot;'}],
+    crumbs:[{text:'&quot;Monitored smoke calls 911 even if you\'re asleep. Builder-grade only helps if someone\'s awake.&quot;',note:'Fear of sleeping through emergency.'},
+      {text:'&quot;Water sensors are pennies vs what a hidden leak costs. One member caught it before $15K damage.&quot;',note:'Dollar story makes add-on easy.'}],
+    gbb:{best:'Whole-home smoke/CO network + water sensors all zones + auto shutoff + thermostat',better:'Combo smoke/CO + water sensor (sink, dishwasher) + kitchen door sensor',good:'Monitored smoke + CO detector + garage door sensor'}},
+  {id:4,icon:'🛏️',name:'Master Bedroom',goal:'Tap into the 3AM scenario. Deepest fear lives here.',
+    look:['Windows — ground floor or ladder-accessible?','Sliding door to deck/balcony?','Safe — bolted or portable?','Medical equipment, CPAP, meds on nightstand'],
+    ask:[{q:'Ever been woken up by a noise at 3AM — not knowing if it was real?',intel:'Almost everyone says yes. Deepest fear surfaced.'},
+      {q:'If the alarm went off right now at 2am, what would you do?',intel:'Most have no plan. Professional monitoring urgency.'},
+      {q:'Anything by the bed you could hit for help immediately?',intel:'Panic pendant close writes itself.'}],
+    crumbs:[{text:'&quot;What I want to give you in this room: certainty. You\'re not alone in that moment.&quot;',note:'Most powerful phrase in home security. Use it once. Here.'},
+      {text:'&quot;Panic button right here. One press — police on the way. No phone, no dark.&quot;',note:'Easiest yes in the whole install.'},
+      {text:'&quot;The goal isn\'t to scare you. It\'s to make you confident.&quot;',note:'Reframes security as peace.'}],
+    gbb:{best:'Full bedroom sensors + panic + medical alert + crash &amp; smash',better:'Window sensors + panic button (nightstand) + hallway motion',good:'Window sensor (master + bath) + smoke detector'}},
+  {id:5,icon:'👧',name:'Kids\' Rooms',goal:'Every parent\'s purpose. Connect sensors to a child\'s name.',
+    look:['Ground floor bedroom window — major risk','Window locks — builder grade?','Distance from master bedroom','Age signals: infant, elementary, teen'],
+    ask:[{q:'How old? Do they sleep all the way down the hall?',intel:'Distance = vulnerability. Age = solution type.'},
+      {q:'Do your little ones ever get up and wander?',intel:'Door chime + motion = child wandering alert.'}],
+    crumbs:[{text:'&quot;This window — I\'m putting a sensor on it. Not to scare you, but because you should know the second it opens. Period.&quot;',note:'Firm, protective energy.'},
+      {text:'&quot;Most common call from parents: \'I just want to make sure they\'re home.\' We automate that.&quot;',note:'Every parent just became a buyer.'}],
+    gbb:{best:'Full kids\' floor + baby monitor integration + wandering alert + pediatric panic',better:'Window sensors + child arrival notification + smart lock code',good:'Window sensors per room + hall motion + door chime'}},
+  {id:6,icon:'💼',name:'Home Office',goal:'Shift to professional risk. This is their income.',
+    look:['Multiple monitors, workstation, laptops','Client files, external drives, NAS','Camera/AV gear, professional tools','Home-based business signals'],
+    ask:[{q:'Work from home full-time or part-time?',intel:'Full-time WFH = massive asset concentration.'},
+      {q:'Does your homeowner\'s insurance cover all this? Most cap at $2,500.',intel:'Indoor camera = theft documentation for claims.'}],
+    crumbs:[{text:'&quot;One camera pointing at the door — insurance claim goes from a fight to a formality.&quot;',note:'Practical, not emotional. Analytical brain.'}],
+    gbb:{best:'Camera + full sensor suite + smart lock on office door + after-hours rules',better:'Indoor HD camera + 24/7 recording + access control',good:'Window/door sensors + motion detector'}},
+  {id:7,icon:'🏠',name:'Hallways &amp; Stairs',goal:'One motion here covers the whole wing. The chokepoint.',
+    look:['Central hallway — one motion covers all bedrooms?','Top of stairs = perfect chokepoint','Multiple wings? May need 2 motions','Large pets roaming? Pet-immune needed'],
+    ask:[{q:'Pets that roam at night? That changes the detector type.',intel:'Shows expertise. Opens pet-immune upsell.'}],
+    crumbs:[{text:'&quot;Contact sensors tell you a door opened. Motion tells you someone\'s already inside. You want both.&quot;',note:'Layered defense explained simply.'}],
+    gbb:{best:'Dual-zone motion + smoke/CO combo + night mode automation',better:'Pet-immune motion + top of stairs + auto-light rule',good:'1 standard PIR motion (hallway)'}},
+  {id:8,icon:'🔧',name:'Basement &amp; Utility',goal:'Expand life safety. Flood, freeze, CO from HVAC. Overlooked windows.',
+    look:['Sump pump — monitored or manual?','Water heater age and drip signs','Gas furnace = CO risk zone','Walkout door, basement windows below grade'],
+    ask:[{q:'Ever had water come in down here?',intel:'Flood sensors = easy yes if they have.'},
+      {q:'That sump pump — know what happens if it fails on vacation?',intel:'Practical, financial, immediate.'}],
+    crumbs:[{text:'&quot;This is where the expensive problems hide. A $30 sensor catches the slow leak at 2am. Nothing catches nothing.&quot;',note:'&quot;Nothing catches nothing&quot; — memorable.'}],
+    gbb:{best:'Water sensors all zones + auto shutoff + freeze sensor + sump + motion + windows',better:'Multiple water sensors + sump monitor + basement motion + windows',good:'Water sensor (heater/washer) + CO detector + door sensor'}},
+  {id:9,icon:'🚗',name:'Garage',goal:'Top-3 entry point. Show the emergency release hack.',
+    look:['Old single-button opener (hackable)','Garage-to-house door — locked or open?','Emergency release cable visible from gap?','Vehicle value, power tools, bikes'],
+    ask:[{q:'Ever pulled away and couldn\'t remember if you closed the garage?',intel:'100% yes. Best smart garage setup.'}],
+    crumbs:[{text:'&quot;See that emergency release cable? Wire hook and 6 seconds — this door opens from outside.&quot;',note:'Live demo creates immediate alarm → solution.'},
+      {text:'&quot;You\'ll never drive back to check again. Close from anywhere.&quot;',note:'Most satisfying use case.'}],
+    gbb:{best:'Smart controller + interior camera + side door smart lock + cable guard + access log',better:'Smart garage controller + open/close remote + auto-close rule + motion',good:'Garage door sensor + house-to-garage contact sensor'}},
+  {id:10,icon:'🌿',name:'Backyard &amp; Perimeter',goal:'Complete the camera story. Future-pace the full app view.',
+    look:['Fence line gaps? Gate locks?','Pool → strict notification need','Dark zones with no lighting','Camera power outlet availability'],
+    ask:[{q:'With the pool — any alert if a kid or animal gets close?',intel:'Pool camera + motion = near-instant close.'},
+      {q:'By the time we\'re done, you\'ll see every corner from your phone. How would that change things?',intel:'Future pacing. They imagine the outcome. Closing in the backyard.'}],
+    crumbs:[{text:'&quot;Cameras don\'t just record. They prevent. A thief sees a camera — picks a different house.&quot;',note:'Shifts camera from evidence to prevention.'},
+      {text:'&quot;I\'ve seen everything I need. Let\'s sit down and I\'ll show you what I\'d put in if it were mine.&quot;',note:'Transition to close. &quot;If it were mine&quot; = ultimate trust.'}],
+    gbb:{best:'360° outdoor cameras + perimeter zones + smart flood lights + gate sensor + pool alert',better:'2 outdoor cameras + motion flood light + pool camera',good:'1 outdoor backyard camera + back door sensor'}},
+  {id:11,icon:'✅',name:'Kitchen Table Close',goal:'Reflect back everything they told you. They designed it themselves.',
+    look:[''],
+    ask:[{q:'Callback: &quot;You told me [CONCERN 1], you mentioned [CONCERN 2], I noticed [OBSERVATION].&quot;',intel:'Use their exact words. They feel heard.'},
+      {q:'&quot;Here\'s exactly what I\'d put in this home if it were mine.&quot;',intel:'Ultimate trust signal. Best → Better → Good.'},
+      {q:'After price: STOP TALKING. First to speak loses.',intel:'Silence. Wait. Let them process.'}],
+    crumbs:[{text:'&quot;This isn\'t a cost. It\'s a decision about what your family is worth — and I already know the answer from what you showed me.&quot;',note:'Final emotional close line.'}],
+    gbb:{best:'Full system — all pain points addressed. &quot;Peace of mind.&quot;',better:'Core sensors + 2 cameras + smart lock. &quot;Everything critical.&quot;',good:'Entry sensors + panel + monitoring. &quot;Start here and grow.&quot;'}},
+  {id:12,icon:'🏆',name:'Objection Playbook',goal:'L.A.C.E. — Listen · Acknowledge · Clarify · Explore',
+    look:[''],
+    ask:[{q:'Price: &quot;When you showed me the kids\' rooms, what was going through your mind? That\'s what this protects.&quot;',intel:'Redirect to emotion.'},
+      {q:'Think about it: &quot;Is there something that doesn\'t feel right? Because waiting just leaves you unprotected tonight.&quot;',intel:'Surface real concern.'},
+      {q:'Safe here: &quot;Homes without security in quiet neighborhoods ARE the easy target.&quot;',intel:'Reframe safety.'},
+      {q:'Already have ADT/Ring: &quot;Is everything in one app? What gaps exist?&quot;',intel:'Find the holes.'},
+      {q:'Contract: &quot;The agreement is what makes equipment pricing work. Most members never want to leave.&quot;',intel:'Reframe commitment.'}],
+    crumbs:[{text:'&quot;I saw your kids\' rooms. I saw your master bedroom. You already know what the right answer is. I\'m just here to make it easy to say yes.&quot;',note:'The True North Close.'}],
+    gbb:{best:'',better:'',good:''}},
+];
+
+// === STATE ===
+let state = {member:{name:'',addr:'',date:''},stops:{},activeStop:0,collapsed:false};
+
+// === GATE ===
+function gateCheck(){
+  const p=document.getElementById('gp').value.toLowerCase().trim();
+  if(p==='ssu2026'||p==='walkthrough'){loadState();renderAll()}
+  else{document.getElementById('ge').style.display='block';document.getElementById('gp').value=''}
+}
+document.getElementById('gp').addEventListener('keypress',e=>{if(e.key==='Enter')gateCheck()});
+
+// === RENDER ===
+function renderAll(){
+  renderStopNav();
+  renderStops();
+  showStop(state.activeStop);
+  updateProgress();
+  updateMemberTag();
+}
+
+function renderStopNav(){
+  const nav=document.getElementById('stopNav');
+  nav.innerHTML=STOPS.map((s,i)=>{
+    const done=state.stops[i]?.complete;
+    return`<button class=&quot;stop-btn ${i===state.activeStop?'active':''} ${done?'done':''}&quot; onclick=&quot;showStop(${i})&quot;>${s.icon} ${s.name.split(' ')[0]}<span class=&quot;check&quot;>✓</span></button>`;
+  }).join('');
+}
+
+function renderStops(){
+  const c=document.getElementById('stopsContainer');
+  c.innerHTML=STOPS.map((s,i)=>{
+    const sd=state.stops[i]||{checks:{},crumbs:{},gbb:'',notes:'',complete:false};
+    let html=`<div class=&quot;stop-panel ${i===state.activeStop?'active':''}&quot; id=&quot;stop-${i}&quot;>`;
+    html+=`<div class=&quot;stop-title&quot;>STOP ${String(i).padStart(2,'0')}: ${s.icon} ${s.name}</div>`;
+    html+=`<div class=&quot;stop-goal&quot;>${s.goal}</div>`;
+    // Look section
+    if(s.look[0]){
+      html+=`<h4 style=&quot;color:var(--red);font-size:.8rem;margin:.5rem 0 .3rem&quot;>🔍 LOOK FOR</h4>`;
+      s.look.forEach((l,li)=>{
+        const ck=sd.checks['l'+li]?'checked':'';
+        html+=`<div class=&quot;check-item ${ck}&quot; onclick=&quot;toggleCheck(${i},'l${li}')&quot;><div class=&quot;check-box&quot;></div><div class=&quot;check-text&quot;>${l}</div></div>`;
+      });
+    }
+    // Ask section
+    html+=`<h4 style=&quot;color:var(--teal);font-size:.8rem;margin:.5rem 0 .3rem&quot;>💬 ASK</h4>`;
+    s.ask.forEach((a,ai)=>{
+      const ck=sd.checks['a'+ai]?'checked':'';
+      html+=`<div class=&quot;check-item ${ck}&quot; onclick=&quot;toggleCheck(${i},'a${ai}')&quot;><div class=&quot;check-box&quot;></div><div class=&quot;check-text&quot;><strong>${a.q}</strong><br><em>${a.intel}</em></div></div>`;
+    });
+    // Crumbs
+    html+=`<h4 style=&quot;color:var(--gold);font-size:.8rem;margin:.5rem 0 .3rem&quot;>🍞 BREADCRUMBS</h4>`;
+    s.crumbs.forEach((cr,ci)=>{
+      const dr=sd.crumbs['c'+ci]?'dropped':'';
+      html+=`<div class=&quot;crumb ${dr}&quot; onclick=&quot;toggleCrumb(${i},'c${ci}')&quot;><div class=&quot;crumb-text&quot;>${cr.text}</div><div class=&quot;crumb-note&quot;>${cr.note}</div></div>`;
+    });
+    // G/B/B
+    if(s.gbb.best){
+      html+=`<h4 style=&quot;color:var(--blue);font-size:.8rem;margin:.5rem 0 .3rem&quot;>✅ GOOD · BETTER · BEST</h4>`;
+      html+=`<div class=&quot;gbb-row&quot;>`;
+      html+=`<div class=&quot;gbb-card ${sd.gbb==='best'?'selected':''}&quot; onclick=&quot;selectGBB(${i},'best')&quot;><div class=&quot;gbb-label&quot;>🥇 BEST</div><div class=&quot;gbb-items&quot;>${s.gbb.best}</div></div>`;
+      html+=`<div class=&quot;gbb-card ${sd.gbb==='better'?'selected':''}&quot; onclick=&quot;selectGBB(${i},'better')&quot;><div class=&quot;gbb-label&quot;>🥈 BETTER</div><div class=&quot;gbb-items&quot;>${s.gbb.better}</div></div>`;
+      html+=`<div class=&quot;gbb-card ${sd.gbb==='good'?'selected':''}&quot; onclick=&quot;selectGBB(${i},'good')&quot;><div class=&quot;gbb-label&quot;>🥉 GOOD</div><div class=&quot;gbb-items&quot;>${s.gbb.good}</div></div>`;
+      html+=`</div>`;
+    }
+    // Notes
+    html+=`<textarea class=&quot;room-notes&quot; placeholder=&quot;Notes for this room...&quot; oninput=&quot;saveNotes(${i},this.value)&quot;>${sd.notes||''}</textarea>`;
+    // Complete button
+    html+=`<button class=&quot;complete-btn ${sd.complete?'done':''}&quot; onclick=&quot;toggleComplete(${i})&quot;>${sd.complete?'✅ Room Complete — Tap to Undo':'Mark Room Complete'}</button>`;
+    html+=`</div>`;
+    return html;
+  }).join('');
+}
+
+function showStop(i){
+  state.activeStop=i;
+  document.querySelectorAll('.stop-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('stop-'+i)?.classList.add('active');
+  document.querySelectorAll('.stop-btn').forEach((b,bi)=>{b.classList.toggle('active',bi===i)});
+  document.querySelector('.stop-nav').children[i]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  saveState();
+}
+
+// === INTERACTIONS ===
+function ensureStop(i){if(!state.stops[i])state.stops[i]={checks:{},crumbs:{},gbb:'',notes:'',complete:false}}
+function toggleCheck(i,key){
+  ensureStop(i);state.stops[i].checks[key]=!state.stops[i].checks[key];
+  const el=document.querySelector(`#stop-${i} .check-item:nth-child(${getCheckIndex(i,key)})`);
+  // Re-render is simpler
+  renderStops();showStop(i);saveState();
+}
+function getCheckIndex(){return 0}// Not needed with re-render
+function toggleCrumb(i,key){
+  ensureStop(i);state.stops[i].crumbs[key]=!state.stops[i].crumbs[key];
+  renderStops();showStop(i);saveState();
+}
+function selectGBB(i,level){
+  ensureStop(i);state.stops[i].gbb=state.stops[i].gbb===level?'':level;
+  renderStops();showStop(i);saveState();
+}
+function saveNotes(i,val){ensureStop(i);state.stops[i].notes=val;saveState()}
+function toggleComplete(i){
+  ensureStop(i);state.stops[i].complete=!state.stops[i].complete;
+  renderAll();saveState();
+}
+
+function updateProgress(){
+  const done=Object.values(state.stops).filter(s=>s.complete).length;
+  const pct=Math.round(done/13*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progText').textContent=`${done} / 13 complete`;
+}
+
+// === MEMBER ===
+function saveMember(){
+  state.member.name=document.getElementById('mName').value;
+  state.member.addr=document.getElementById('mAddr').value;
+  state.member.date=document.getElementById('mDate').value;
+  updateMemberTag();saveState();
+}
+function updateMemberTag(){
+  const tag=document.getElementById('memberTag');
+  tag.textContent=state.member.name?`${state.member.name} — ${state.member.addr||''}`.trim():'No member set';
+}
+function toggleMemberBar(){
+  const bar=document.getElementById('memberBar');
+  state.collapsed=!state.collapsed;
+  bar.style.display=state.collapsed?'none':'block';
+}
+
+// === EXPORT ===
+function generateReport(){
+  let r=`══════════════════════════════════\n  SSU WALKTHROUGH REPORT\n══════════════════════════════════\n\n`;
+  r+=`Member: ${state.member.name||'N/A'}\nAddress: ${state.member.addr||'N/A'}\nDate: ${state.member.date||'N/A'}\n\n`;
+  const done=Object.values(state.stops).filter(s=>s.complete).length;
+  r+=`Progress: ${done}/13 rooms complete\n\n`;
+  STOPS.forEach((s,i)=>{
+    const sd=state.stops[i];
+    if(!sd) return;
+    const checks=Object.keys(sd.checks||{}).filter(k=>sd.checks[k]).length;
+    const crumbs=Object.keys(sd.crumbs||{}).filter(k=>sd.crumbs[k]).length;
+    if(checks||crumbs||sd.gbb||sd.notes||sd.complete){
+      r+=`── ${s.icon} ${s.name} ${sd.complete?'✅':''} ──\n`;
+      if(checks) r+=`  Questions asked: ${checks}\n`;
+      if(crumbs) r+=`  Breadcrumbs dropped: ${crumbs}\n`;
+      if(sd.gbb) r+=`  G/B/B selected: ${sd.gbb.toUpperCase()}\n`;
+      if(sd.notes) r+=`  Notes: ${sd.notes}\n`;
+      r+='\n';
+    }
+  });
+  r+=`══════════════════════════════════\nMembers First | G$D | True North\nGenerated ${new Date().toLocaleString()}\n`;
+  return r;
+}
+function emailReport(){
+  const r=generateReport();
+  const subj=encodeURIComponent(`Walkthrough Report — ${state.member.name||'Member'} — ${state.member.addr||''}`);
+  window.open(`mailto:?subject=${subj}&amp;body=${encodeURIComponent(r)}`);
+}
+function copyReport(){
+  const r=generateReport();
+  navigator.clipboard.writeText(r).then(()=>alert('Report copied!')).catch(()=>{
+    const t=document.createElement('textarea');t.value=r;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);alert('Copied!');
+  });
+}
+
+// === RESET ===
+function resetWalkthrough(){
+  if(!confirm('Reset walkthrough for next house? This clears all check-offs and notes.')) return;
+  state={member:{name:'',addr:'',date:''},stops:{},activeStop:0,collapsed:false};
+  localStorage.removeItem('ssu_walkthrough');
+  document.getElementById('mName').value='';
+  document.getElementById('mAddr').value='';
+  document.getElementById('mDate').value=new Date().toISOString().split('T')[0];
+  renderAll();
+}
+
+// === STORAGE ===
+function saveState(){try{localStorage.setItem('ssu_walkthrough',JSON.stringify(state))}catch(e){}}
+function loadState(){
+  try{
+    const s=localStorage.getItem('ssu_walkthrough');
+    if(s) state=JSON.parse(s);
+    document.getElementById('mName').value=state.member?.name||'';
+    document.getElementById('mAddr').value=state.member?.addr||'';
+    document.getElementById('mDate').value=state.member?.date||new Date().toISOString().split('T')[0];
+  }catch(e){}
+  if(!state.member) state.member={name:'',addr:'',date:''};
+  if(!state.stops) state.stops={};
+}
+
+// INIT
+document.getElementById('mDate').value=new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
+"></iframe>
+</div>
+
+<script>
+function login(){if(document.getElementById('gp').value.toLowerCase().trim()==='ssu2026'){document.getElementById('gate').classList.add('h');document.getElementById('hub').style.display='block'}else{document.getElementById('ge').style.display='block'}}
+document.getElementById('gp').addEventListener('keypress',e=>{if(e.key==='Enter')login()});
+function openTool(id){document.getElementById('hub').style.display='none';document.querySelectorAll('.tool-frame').forEach(f=>f.classList.remove('active'));document.getElementById('frame-'+id).classList.add('active')}
+function goHub(){document.querySelectorAll('.tool-frame').forEach(f=>f.classList.remove('active'));document.getElementById('hub').style.display='block'}
+</script>
+</body>
+</html>
